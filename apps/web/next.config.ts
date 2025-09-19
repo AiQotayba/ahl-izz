@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   
   outputFileTracingRoot: __dirname, // أو مسار root الأساسي
   images: {
-    domains: ['localhost'],
+    domains: ['localhost' ,"ahl-izz.vercel.app","ahlel-izz.com"],
     formats: ['image/webp', 'image/avif'],
   },
   async headers() {
