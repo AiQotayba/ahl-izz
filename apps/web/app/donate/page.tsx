@@ -38,7 +38,7 @@ export interface IPledge {
 const pledgeSchema = z.object({
 
   fullName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل').max(100, 'الاسم لا يمكن أن يتجاوز 100 حرف').optional().or(z.literal('')),
-  phoneNumber: z.string().optional().or(z.literal('')),
+  phoneNumber: z.string().min(1, 'يرجى إدخال رقم الهاتف').optional().or(z.literal('')),
   email: z.string().email('يرجى إدخال بريد إلكتروني صحيح').optional().or(z.literal('')),
   amount: z.number().min(1, 'المبلغ يجب أن يكون دولار واحد على الأقل'),
   message: z.string().max(500, 'الرسالة لا يمكن أن تتجاوز 500 حرف').optional().or(z.literal('')),
@@ -240,7 +240,7 @@ export default function PledgeFormPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                   {/* Phone */}
                   <PhoneInputField
-                    label="رقم الهاتف"
+                    label="رقم الهاتف*"
                     placeholder="رقم الهاتف"
                     value={watch('phoneNumber')}
                     onChange={(value) => setValue('phoneNumber', value || '')}

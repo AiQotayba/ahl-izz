@@ -4,7 +4,7 @@
   "private": true,
   "description": "أهل العز لا ينسون - منصة التبرعات لدعم ريف حلب الجنوبي",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3100",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -33,7 +33,7 @@ export default function NotFound() {
                 الرئيسية
               </Button>
             </Link>
-            <Link href="/donate" className="block">
+            <Link href="/donate" prefetch={true}>
               <Button
                 variant="outline"
                 className="w-full border-2 border-[#1E7B6B] text-[#1E7B6B] hover:bg-[#1E7B6B] hover:text-white font-semibold py-3 text-lg transition-all duration-300"
