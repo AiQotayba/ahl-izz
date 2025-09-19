@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('');
@@ -35,7 +36,7 @@ export default function AdminLogin() {
     };
 
     return (
-        <div 
+        <div
             className="min-h-screen islamic-pattern flex items-center justify-center p-4"
             style={{
                 backgroundImage: 'url(/images/bg2.png)',
@@ -127,9 +128,9 @@ export default function AdminLogin() {
                     <div className="mt-6 text-center">
                         <p className="text-sm text-donation-teal font-somar">
                             للعودة إلى الموقع الرئيسي،{' '}
-                            <a href="/" className="text-donation-darkTeal hover:text-donation-teal font-medium underline">
+                            <Link href="/" className="text-donation-darkTeal hover:text-donation-teal font-medium underline">
                                 اضغط هنا
-                            </a>
+                            </Link>
                         </p>
                     </div>
                 </CardContent>

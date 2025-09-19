@@ -18,7 +18,7 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
-
+.turbo/*
 # Logs
 logs/
 *.log
