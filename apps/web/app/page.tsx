@@ -181,6 +181,7 @@ export default function HomePage() {
           {/* Logo Section */}
           <div className="flex justify-start mb-8">
             <Logo />
+
           </div>
 
           {/* اعلى التبرعات */}

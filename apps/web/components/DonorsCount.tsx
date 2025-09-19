@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 interface DonorsCountProps {
@@ -34,9 +35,9 @@ export function DonorsCount({ count = 2000, isLoading = false }: DonorsCountProp
         </h3>
 
         {/* QR Code Placeholder */}
-        <div className="w-32 h-32 p-4 bg-white rounded-lg mx-auto flex items-center justify-center">
-          <Image src="/images/code.png" alt="QR Code" width={96} height={96} />
-        </div>
+        <Link href="/donate" className="w-32 h-32 bg-white rounded-lg mx-auto flex items-center justify-center" >
+          <Image src="/images/qr-code.png" alt="QR Code" width={115} height={115} />
+        </Link>
       </div>
     </div>
   );

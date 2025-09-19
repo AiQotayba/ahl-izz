@@ -17,7 +17,7 @@ export function TopDonations({ donations, isLoading }: TopDonationsProps) {
 
   if (isLoading) {
     return (
-      <div className="w-full shadow-lg overflow-hidden max-w-[797px]">
+      <div className="w-full overflow-hidden max-w-[797px]">
         <div className="bg-donation-teal max-w-[250px] pb-8 -mb-4 rounded-t-lg px-6 py-4">
           <div className="flex items-center gap-3">
             <Star className="w-6 h-6 text-donation-yellow fill-current" />
