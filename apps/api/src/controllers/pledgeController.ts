@@ -32,13 +32,13 @@ export const validatePledgeSubmission = [
 
 // Validation rules for pledge updates
 export const validatePledgeUpdate = [
-  body('paymentStatus')
+  body('pledgeStatus')
     .optional()
-    .isIn(['pending', 'confirmed', 'review'])
-    .withMessage('Invalid status value'),
+    .isIn(['pending', 'confirmed', 'rejected'])
+    .withMessage('Invalid pledge status'),
   body('paymentMethod')
     .optional()
-    .isIn(['online', 'cash', 'bank_transfer', 'check', 'other'])
+    .isIn(['received', 'pledged'])
     .withMessage('Invalid payment method'),
   body('fullName')
     .optional()
@@ -137,14 +137,19 @@ export const getPledges = async (req: Request, res: Response<any>): Promise<void
     // Calculate skip
     const skip = (page - 1) * limit;
 
-    // Get pledges and total count
-    const [pledges, total] = await Promise.all([
+    // Get pledges, total count, and top 5 donations
+    const [pledges, total, topDonations] = await Promise.all([
       Pledge.find(filter)
         .sort(sort)
         .skip(skip)
         .limit(limit)
         .lean(),
-      Pledge.countDocuments(filter)
+      Pledge.countDocuments(filter),
+      Pledge.find({ pledgeStatus: 'confirmed' })
+        .sort({ amount: -1 })
+        .limit(5)
+        .select('fullName amount createdAt')
+        .lean()
     ]);
 
     const totalPages = Math.ceil(total / limit);
@@ -161,6 +166,11 @@ export const getPledges = async (req: Request, res: Response<any>): Promise<void
         pledgeStatus: pledge.pledgeStatus,
         paymentMethod: pledge.paymentMethod,
         createdAt: pledge.createdAt
+      })),
+      topDonations: topDonations.map(donation => ({
+        fullName: donation.fullName,
+        amount: donation.amount,
+        createdAt: donation.createdAt
       })),
       pagination: {
         page,
@@ -331,14 +341,27 @@ export const getPublicPledges = async (
   try {
     const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
 
-    const pledges = await Pledge.find({ pledgeStatus: 'confirmed' })
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .lean();
+    // Get pledges and top 5 donations
+    const [pledges, topDonations] = await Promise.all([
+      Pledge.find({ pledgeStatus: 'confirmed' })
+        .sort({ createdAt: -1 })
+        .limit(limit)
+        .lean(),
+      Pledge.find({ pledgeStatus: 'confirmed' })
+        .sort({ amount: -1 })
+        .limit(5)
+        .select('fullName amount createdAt')
+        .lean()
+    ]);
 
     const maskedPledges = pledges.map(pledge => maskPII(pledge));
+    const maskedTopDonations = topDonations.map(donation => maskPII(donation));
 
-    res.json({ success: true, data: maskedPledges });
+    res.json({ 
+      success: true, 
+      data: maskedPledges,
+      topDonations: maskedTopDonations
+    });
 
   } catch (error) {
     res.status(500).json({ success: false, error: 'Failed to fetch public pledges' });

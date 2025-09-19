@@ -12,7 +12,7 @@ export interface IPledge {
   paymentMethod: 'received' | 'pledged';
 
   // حالة التعهد
-  pledgeStatus: 'received' | 'pending' | 'confirmed' | 'rejected';
+  pledgeStatus: 'pending' | 'confirmed' | 'rejected';
 
   createdAt?: Date;
   updatedAt?: Date;

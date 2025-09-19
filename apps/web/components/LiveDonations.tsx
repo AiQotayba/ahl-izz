@@ -41,7 +41,7 @@ export function LiveDonations({ donations = [], isLoading }: LiveDonationsProps)
     }
 
     return (
-        <div className="w-[322px] h-[592px] bg-white rounded-2xl shadow-lg overflow-hidden p-6">
+        <div className="w-[322px] h-[620px] bg-white rounded-2xl shadow-lg overflow-hidden p-6">
             {/* Header */}
             <div className="w-full rounded-[11px] p-4 border-[0.4px] border-[#FEFEFE] bg-[#BBAC15] flex items-center justify-center">
                 <h2 className=" font-somar font-bold text-2xl leading-none tracking-tight text-center flex items-center justify-center text-white">

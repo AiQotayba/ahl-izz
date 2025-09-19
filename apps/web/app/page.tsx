@@ -74,13 +74,14 @@ export default function HomePage() {
   useEffect(() => {
     const fetchDonations = async () => {
       try {
-        const { data } = await pledgeAPI.getPublic(50); // Get more to find top donations
+        const { data } = await pledgeAPI.getPublic(10); // Get more to find top donations
         const pledges = data.data || [];
-        console.log(pledges);
+        const topDonationsData = data.topDonations || [];
+        console.log('Pledges:', pledges);
+        console.log('Top Donations:', topDonationsData);
 
         setLiveDonations(pledges);
-
-        setTopDonations(pledges);
+        setTopDonations(topDonationsData);
       } catch (error) {
         console.error('Failed to fetch donations:', error);
       }

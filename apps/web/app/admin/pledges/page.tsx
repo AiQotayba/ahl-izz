@@ -31,7 +31,7 @@ import {
   User,
   AlertCircle,
   PhoneCallIcon,
-
+  Gavel,
 } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -59,12 +59,11 @@ const Badge = ({ children, className = '' }: { children: React.ReactNode; classN
 export default function PledgesManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [paymentFilter, setPaymentFilter] = useState<string>('all');
   const [selectedPledge, setSelectedPledge] = useState<Pledge | null>(null);
   const queryClient = useQueryClient();
 
   // Fetch pledges data
-  const { data: pledgesResponse, isLoading, error } = useQuery({
+  const { data: pledgesResponse, isLoading, error, refetch } = useQuery({
     queryKey: ['pledges'],
     queryFn: () => pledgeAPI.getAll({ limit: 100 }),
     retry: 2,
@@ -76,9 +75,12 @@ export default function PledgesManagement() {
 
   // Update pledge status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: ({ pledgeId, status }: { pledgeId: string; status: string }) =>
-      pledgeAPI.update(pledgeId, { pledgeStatus: status }),
+    mutationFn: ({ pledgeId, status }: { pledgeId: string; status: string }) => {
+      return pledgeAPI.update(pledgeId, { pledgeStatus: status });
+      refetch();
+    },
     onSuccess: (_, { status }) => {
+      refetch();
       queryClient.invalidateQueries({ queryKey: ['pledges'] });
       const statusText = status === 'confirmed' ? 'مؤكد' : status === 'rejected' ? 'مرفوض' : status;
       toast.success(`تم تحديث حالة التبرع إلى: ${statusText}`);
@@ -91,7 +93,10 @@ export default function PledgesManagement() {
 
   // Erase PII mutation
   const erasePIIMutation = useMutation({
-    mutationFn: (pledgeId: string) => pledgeAPI.erasePII(pledgeId),
+    mutationFn: (pledgeId: string) => {
+      return pledgeAPI.erasePII(pledgeId);
+      refetch();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['pledges'] });
       toast.success('تم حذف البيانات الشخصية بنجاح');
@@ -102,12 +107,39 @@ export default function PledgesManagement() {
     },
   });
 
+  // Update payment method mutation
+  const updatePaymentMethodMutation = useMutation({
+    mutationFn: ({ pledgeId, paymentMethod }: { pledgeId: string; paymentMethod: 'pledged' | 'received' }) => {
+      pledgeAPI.update(pledgeId, { paymentMethod });
+      setSelectedPledge(null);
+      return refetch();
+    },
+    onSuccess: (_, { paymentMethod }) => {
+      queryClient.invalidateQueries({ queryKey: ['pledges'] });
+      const methodText = paymentMethod === 'received' ? 'تم الاستلام' : 'تم التعهد';
+      toast.success(`تم تحديث طريقة الدفع إلى: ${methodText}`);
+    },
+    onError: (error: any) => {
+      console.error('Failed to update payment method:', error);
+      toast.error('فشل في تحديث طريقة الدفع');
+    },
+  });
+
   const updatePledgeStatus = (pledgeId: string, status: string) => {
+    setSelectedPledge(null);
     updateStatusMutation.mutate({ pledgeId, status });
+    refetch();
   };
 
   const erasePII = (pledgeId: string) => {
+    setSelectedPledge(null);
     erasePIIMutation.mutate(pledgeId);
+    refetch();
+  };
+
+  const updatePaymentMethod = (pledgeId: string, paymentMethod: 'pledged' | 'received') => {
+    updatePaymentMethodMutation.mutate({ pledgeId, paymentMethod });
+    refetch();
   };
 
   const getStatusBadge = (status: string) => {
@@ -128,6 +160,23 @@ export default function PledgesManagement() {
     );
   };
 
+  const getPaymentMethodBadge = (paymentMethod?: string) => {
+    const methodConfig = {
+      pledged: { color: 'bg-blue-100 text-blue-800', icon: Gavel, text: 'تعهد' },
+      received: { color: 'bg-green-100 text-green-800', icon: CheckCircle, text: 'تم الاستلام' },
+    };
+
+    const config = methodConfig[paymentMethod as keyof typeof methodConfig] || methodConfig.pledged;
+    const Icon = config.icon;
+
+    return (
+      <Badge className={`${config.color} flex items-center gap-1`}>
+        <Icon className="w-3 h-3" />
+        {config.text}
+      </Badge>
+    );
+  };
+
   const filteredPledges = pledges.filter(pledge => {
     const matchesSearch =
       pledge.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -135,9 +184,8 @@ export default function PledgesManagement() {
       pledge.phoneNumber?.includes(searchTerm);
 
     const matchesStatus = statusFilter === 'all' || pledge.pledgeStatus === statusFilter;
-    const matchesPayment = paymentFilter === 'all' || pledge.paymentMethod === paymentFilter;
 
-    return matchesSearch && matchesStatus && matchesPayment;
+    return matchesSearch && matchesStatus;
   });
 
   // Loading state
@@ -207,17 +255,6 @@ export default function PledgesManagement() {
             <SelectItem value="pending" className="text-donation-darkTeal font-somar">في انتظار المراجعة</SelectItem>
             <SelectItem value="confirmed" className="text-donation-darkTeal font-somar">تم التأكيد</SelectItem>
             <SelectItem value="rejected" className="text-donation-darkTeal font-somar">تم الرفض</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={paymentFilter} onValueChange={setPaymentFilter} dir="rtl">
-          <SelectTrigger className="w-[180px] border-donation-teal/30 text-donation-darkTeal font-somar">
-            <SelectValue placeholder="فلترة حسب الدفع" />
-          </SelectTrigger>
-          <SelectContent className="bg-white/95 backdrop-blur-sm border-donation-teal/20">
-            <SelectItem value="all" className="text-donation-darkTeal font-somar">جميع طرق الدفع</SelectItem>
-            <SelectItem value="received" className="text-donation-darkTeal font-somar">تم استلام المبلغ</SelectItem>
-            <SelectItem value="pledged" className="text-donation-darkTeal font-somar">تعهد بالدفع</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -304,17 +341,6 @@ export default function PledgesManagement() {
                         {pledge.fullName || 'مجهول'}
                       </h3>
                       {getStatusBadge(pledge.pledgeStatus)}
-                      {pledge.paymentMethod === 'received' ? (
-                        <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3" />
-                          تم استلام المبلغ
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          تعهد بالدفع
-                        </Badge>
-                      )}
                       <span className="text-lg font-bold text-donation-gold font-somar">
                         ${pledge.amount.toLocaleString()}
                       </span>
@@ -403,26 +429,14 @@ export default function PledgesManagement() {
                   <div className="mt-1">{getStatusBadge(selectedPledge.pledgeStatus)}</div>
                 </div>
                 <div>
+                  <label className="text-sm font-medium text-donation-teal font-somar">طريقة الدفع</label>
+                  <div className="mt-1">{getPaymentMethodBadge(selectedPledge.paymentMethod)}</div>
+                </div>
+                <div>
                   <label className="text-sm font-medium text-donation-teal font-somar">تاريخ تقديم التبرع</label>
                   <p className="text-donation-darkTeal font-somar">
                     {new Date(selectedPledge.createdAt).toLocaleString('ar-SA')}
                   </p>
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-donation-teal font-somar">طريقة الدفع</label>
-                  <div className="mt-1">
-                    {selectedPledge.paymentMethod === 'received' ? (
-                      <Badge className="bg-green-100 text-green-800 flex items-center gap-1 w-fit">
-                        <CheckCircle className="w-3 h-3" />
-                        تم استلام المبلغ
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1 w-fit">
-                        <Clock className="w-3 h-3" />
-                        تعهد بالدفع
-                      </Badge>
-                    )}
-                  </div>
                 </div>
               </div>
 
@@ -460,6 +474,20 @@ export default function PledgesManagement() {
                       {updateStatusMutation.isPending ? 'جاري الرفض...' : 'رفض التبرع'}
                     </Button>
                   </>
+                )}
+
+                {/* Auctions Button - Set to received */}
+                {selectedPledge.paymentMethod == "pledged" && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      updatePaymentMethod(selectedPledge._id, 'received');
+                    }}
+                    className="flex-1 border-donation-gold text-donation-gold hover:bg-donation-gold/10 font-somar disabled:opacity-50"
+                  >
+                    <Gavel className="w-4 h-4 ml-1" />
+                    {updatePaymentMethodMutation.isPending ? 'جاري التحديث...' : 'تم الاستلام'}
+                  </Button>
                 )}
                 {/* <Button
                   variant="outline"
