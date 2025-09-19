@@ -37,9 +37,12 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:3100',
   'http://localhost:3001',
-  'https://ahlel-izz.vercel.app',
+  'https://ahl-izz.vercel.app',
   'https://ahlel-izz.com',
-  'https://www.ahlel-izz.com'
+  'https://www.ahlel-izz.com',
+  'https://aleppo-azz.vercel.app',
+  'https://aleppo-azz.com',
+  'https://www.aleppo-azz.com'
 ];
 
 // Add custom origins from environment
@@ -61,6 +64,10 @@ app.use(cors({
     if (config.NODE_ENV === 'development') {
       return callback(null, true);
     }
+    
+    // Log the rejected origin for debugging
+    logger.warn(`CORS: Rejected origin: ${origin}`);
+    logger.info(`CORS: Allowed origins: ${allowedOrigins.join(', ')}`);
     
     return callback(new Error('Not allowed by CORS'));
   },
