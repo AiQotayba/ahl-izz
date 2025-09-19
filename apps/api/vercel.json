@@ -1,21 +1,16 @@
 {
     "version": 2,
     "builds": [
-        {
-            "src": "src/server.ts",
-            "use": "@vercel/node",
-            "config": {
-                "tsc": true
-            }
-        }
+      {
+        "src": "package.json",
+        "use": "@vercel/node"
+      }
     ],
     "routes": [
-        {
-            "src": "/(.*)",
-            "dest": "src/server.ts"
-        }
-    ],
-    "env": {
-        "NODE_ENV": "production"
-    }
-}
+      {
+        "src": "/(.*)",
+        "dest": "dist/server.js"
+      }
+    ]
+  }
+  

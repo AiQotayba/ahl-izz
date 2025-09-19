@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Lock, Mail } from 'lucide-react';
 
 export default function AdminLogin() {
     const [email, setEmail] = useState('');
@@ -70,18 +70,18 @@ export default function AdminLogin() {
                         )}
 
                         <div className="space-y-2">
-                            <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                            <Label htmlFor="email" className="text-sm font-medium text-donation-teal font-somar">
                                 البريد الإلكتروني
                             </Label>
                             <div className="relative">
-                                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-donation-teal/60 w-4 h-4" />
                                 <Input
                                     id="email"
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="pl-10"
-                                    placeholder="admin@admin.com"
+                                    className="pl-10 border-donation-teal/30 focus:border-donation-teal focus:ring-donation-teal/20 font-somar"
+                                    placeholder="ahmad@mail.com"
                                     required
                                     disabled={loading}
                                 />
@@ -89,25 +89,25 @@ export default function AdminLogin() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                            <Label htmlFor="password" className="text-sm font-medium text-donation-teal font-somar">
                                 كلمة المرور
                             </Label>
                             <div className="relative">
-                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-donation-teal/60 w-4 h-4" />
                                 <Input
                                     id="password"
                                     type={showPassword ? 'text' : 'password'}
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="pl-10 pr-10"
-                                    placeholder="••••••••"
+                                    className="pl-10 pr-10 border-donation-teal/30 focus:border-donation-teal focus:ring-donation-teal/20 font-somar"
+                                    placeholder="أدخل كلمة المرور"
                                     required
                                     disabled={loading}
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-donation-teal/60 hover:text-donation-teal"
                                     disabled={loading}
                                 >
                                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -117,7 +117,7 @@ export default function AdminLogin() {
 
                         <Button
                             type="submit"
-                            className="w-full"
+                            className="w-full bg-gradient-to-r from-donation-teal to-donation-darkTeal hover:from-donation-teal/90 hover:to-donation-darkTeal/90 text-white font-somar py-3"
                             disabled={loading}
                         >
                             {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
@@ -125,9 +125,9 @@ export default function AdminLogin() {
                     </form>
 
                     <div className="mt-6 text-center">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-donation-teal font-somar">
                             للعودة إلى الموقع الرئيسي،{' '}
-                            <a href="/" className="text-blue-600 hover:text-blue-500 font-medium">
+                            <a href="/" className="text-donation-darkTeal hover:text-donation-teal font-medium underline">
                                 اضغط هنا
                             </a>
                         </p>

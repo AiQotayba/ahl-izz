@@ -41,12 +41,20 @@ export default function AdminLayout({
   // Show loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">جاري التحميل...</p>
+        <div 
+          className="min-h-screen islamic-pattern flex items-center justify-center"
+          style={{
+            backgroundImage: 'url(/images/bg2.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }}
+        >
+          <div className="text-center bg-white/90 backdrop-blur-sm p-8 rounded-xl shadow-lg border border-donation-teal/20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-donation-teal mx-auto"></div>
+            <p className="mt-4 text-donation-darkTeal font-somar">جاري التحميل...</p>
+          </div>
         </div>
-      </div>
     );
   }
 
@@ -62,19 +70,19 @@ export default function AdminLayout({
 
   const navigation = [
     {
-      name: 'لوحة التحكم',
+      name: 'مركز التحكم',
       href: '/admin',
       icon: LayoutDashboard,
       current: pathname === '/admin',
     },
     {
-      name: 'إدارة التبرعات',
+      name: 'مركز التبرعات',
       href: '/admin/pledges',
       icon: DollarSign,
       current: pathname === '/admin/pledges',
     },
     {
-      name: 'إدارة المستخدمين',
+      name: 'مركز المستخدمين',
       href: '/admin/users',
       icon: Users,
       current: pathname === '/admin/users',
@@ -101,7 +109,7 @@ export default function AdminLayout({
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-donation-darkTeal font-somar">لوحة التحكم</h2>
+                <h2 className="text-lg font-bold text-donation-darkTeal font-somar">مركز التحكم الإداري</h2>
                 <p className="text-sm text-donation-teal font-somar">حملة حلب الإغاثية</p>
               </div>
             </div>
@@ -147,7 +155,7 @@ export default function AdminLayout({
                 className="flex items-center px-3 py-2 text-sm font-medium text-donation-darkTeal hover:bg-gradient-to-r hover:from-donation-teal/5 hover:to-donation-gold/5 rounded-lg transition-all duration-200 font-somar"
               >
                 <Home className="w-4 h-4 ml-3" />
-                الموقع الرئيسي
+                الموقع العام للمتبرعين
               </Link>
               
               <Button
