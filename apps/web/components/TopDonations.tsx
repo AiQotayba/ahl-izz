@@ -43,7 +43,7 @@ export function TopDonations({ donations, isLoading }: TopDonationsProps) {
   }
 
   return (
-    <div className="w-full shadow-lg overflow-hidden max-w-[797px]">
+    <div className="w-full shadow-lg overflow-hidden max-w-[900px]">
       {/* Header */}
       <div className="bg-donation-teal max-w-[250px] pb-8 -mb-4 rounded-t-lg px-6 py-4">
         <div className="flex items-center gap-3">
@@ -61,7 +61,7 @@ export function TopDonations({ donations, isLoading }: TopDonationsProps) {
             <div key={donation._id} className="flex-shrink-0 ">
               <div className="rounded-lg overflow-hidden gap-2">
                 {/* Amount Section */}
-                <div className="bg-donation-gold w-[137px] h-[42px] justify-center items-center flex rounded-t-md text-center">
+                <div className="bg-donation-gold h-[42px] justify-center items-center flex rounded-t-md text-center" title={donation.amount.toLocaleString()}>
                   <div className="text-white font-somar font-bold text-sm w-full h-full leading-none tracking-tight text-center flex items-center justify-center">
                     ${donation.amount.toLocaleString()}
                   </div>
@@ -69,7 +69,7 @@ export function TopDonations({ donations, isLoading }: TopDonationsProps) {
 
                 {/* Company Section */}
                 <div className="bg-donation-teal p-4 py-3 flex items-center justify-center">
-                  <div className="text-white font-somar font-bold text-lg leading-none tracking-tight text-center">
+                  <div className="text-white font-somar font-bold text-sm leading-none tracking-tight text-center line-clamp-1" title={donation.fullName || 'فاعل خير'}>
                     {donation.fullName || 'فاعل خير'}
                   </div>
                 </div>

@@ -142,7 +142,7 @@ export default function HomePage() {
   if (stats.error && stats.totalAmount === 0 && stats.totalCount === 0) {
     return (
       <div
-        className="flex flex-col items-center justify-center min-h-screen p-6"
+        className="flex flex-col items-center justify-center min-h-screen p-3 sm:p-6"
         style={{
           backgroundImage: 'url(/images/bg2.png)',
           backgroundSize: 'cover',
@@ -151,12 +151,12 @@ export default function HomePage() {
         }}
         dir="rtl"
       >
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 text-center max-w-md">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">خطأ في تحميل البيانات</h2>
-          <p className="text-gray-700 mb-4">{stats.error}</p>
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-4 sm:p-6 lg:p-8 text-center max-w-xs sm:max-w-md mx-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-red-600 mb-3 sm:mb-4">خطأ في تحميل البيانات</h2>
+          <p className="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">{stats.error}</p>
           <Button
             onClick={() => window.location.reload()}
-            className="bg-donation-teal hover:bg-donation-teal/90 text-white"
+            className="bg-donation-teal hover:bg-donation-teal/90 text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
           >
             إعادة المحاولة
           </Button>
@@ -167,7 +167,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="flex flex-row items-center justify-center min-h-screen overflow-hidden p-6 relative m-auto"
+      className="flex flex-col lg:flex-row items-center justify-center min-h-screen overflow-hidden p-3 sm:p-6 relative m-auto"
       style={{
         backgroundImage: 'url(/images/bg2.png)',
         backgroundSize: 'cover',
@@ -176,25 +176,24 @@ export default function HomePage() {
       }}
       dir="rtl"
     >
-      <div className="flex flex-row items-center justify-center mx-10 w-full">
-        <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col lg:flex-row items-center justify-center mx-2 sm:mx-5 lg:mx-10 w-full gap-6 lg:gap-0">
+        <div className="max-w-7xl mx-auto w-full">
           {/* Logo Section */}
-          <div className="flex justify-start mb-8">
+          <div className="flex justify-start mb-4 sm:mb-6 lg:mb-8">
             <Logo />
-
           </div>
 
           {/* اعلى التبرعات */}
-          <div className="mb-8">
+          <div className="mb-4 sm:mb-6 lg:mb-8 hidden sm:block">
             <TopDonations donations={topDonations} />
           </div>
 
           {/* صف (اجمالي التبرعات و عدد المتبرعين) */}
-          <div className="flex flex-row gap-8 mb-8 max-w-[797px]">
-            <div className="flex justify-center">
+          <div className=" flex-col sm:flex-row justify-between gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6 lg:mb-8 max-w-[900px] hidden sm:flex">
+            <div className="flex justify-center w-full sm:w-auto">
               <TotalDonations totalAmount={stats.totalAmount} isLoading={stats.loading} />
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center w-full sm:w-auto">
               <DonorsCount count={stats.totalCount} isLoading={stats.loading} />
             </div>
           </div>
@@ -202,8 +201,8 @@ export default function HomePage() {
         </div>
 
         {/* التبرعات المباشرة */}
-        <div className="max-w-7xl mx-auto px-6 flex items-center">
-          <div className="flex justify-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 items-center w-full lg:w-auto hidden sm:flex">
+          <div className="flex justify-center w-full">
             <LiveDonations donations={liveDonations} isLoading={stats.loading} />
           </div>
         </div>

@@ -1,5 +1,7 @@
 'use client';
 
+import { cn } from "@/lib/utils";
+
 
 interface LiveDonation {
     _id: string;
@@ -55,12 +57,18 @@ export function LiveDonations({ donations = [], isLoading }: LiveDonationsProps)
                     <div key={donation._id} className="flex w-full items-center justify-between gap-4">
 
                         {/* Donor Name */}
-                        <div className=" text-donation-teal font-somar font-bold text-lg tracking-tight text-right flex items-center truncate">
-                            {donation.fullName || 'فاعل خير'}
+                        <div className=" text-donation-teal  flex items-center  max-w-[130px]">
+                            <span className="text-sm leading-none line-clamp-1 tracking-tight truncate font-somar font-semibold text-md  text-right">
+
+                                {donation.fullName || 'فاعل خير'}
+                            </span>
                         </div>
 
                         {/* Amount Button */}
-                        <div className="min-w-24  bg-[#0AAE89] font-somar text-white font-bold px-4 py-2 rounded-lg text-center">
+                        <div className={cn(
+                            "w-32 text-sm bg-[#0AAE89] font-somar text-white font-bold px-4 py-2 rounded-lg text-center",
+                            donation.amount.toLocaleString().length < 6 ? "text-sm" : "text-xs"
+                        )}>
                             ${donation.amount.toLocaleString()}
                         </div>
                     </div>
