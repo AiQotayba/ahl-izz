@@ -8,6 +8,6 @@ interface LogoProps {
 
 export function Logo({ className = "" }: LogoProps) {
     return (
-        <Image width={200} height={200} className={className} src="/logo.png" alt="Logo" />
+        <Image width={200} height={200} className={className} src="/images/logo.png" alt="Logo" />
     );
 }

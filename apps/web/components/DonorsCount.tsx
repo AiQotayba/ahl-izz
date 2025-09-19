@@ -35,7 +35,7 @@ export function DonorsCount({ count = 2000, isLoading = false }: DonorsCountProp
 
         {/* QR Code Placeholder */}
         <div className="w-32 h-32 p-4 bg-white rounded-lg mx-auto flex items-center justify-center">
-          <Image src="/code.png" alt="QR Code" width={96} height={96} />
+          <Image src="/images/code.png" alt="QR Code" width={96} height={96} />
         </div>
       </div>
     </div>
