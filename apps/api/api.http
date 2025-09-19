@@ -1,0 +1,455 @@
+### Donation Hub API Tests
+### Base URL: http://localhost:3001
+
+### Variables
+@baseUrl = http://localhost:3001
+@apiUrl = {{baseUrl}}/api
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNkMTI3N2E4MTE4YWVmYWQ3ZGJhZGQiLCJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1ODI3MDA3OCwiZXhwIjoxNzU4MjcwOTc4fQ.-tK-adn9Hiwd__u_a6hN4dY0nFnic0Fw3snHQNS-rnU
+@refreshToken = your_refresh_token_here
+
+### Health Check
+GET {{baseUrl}}/health
+
+###
+
+### 1. AUTHENTICATION ENDPOINTS
+
+### Login (Admin)
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "password": "admin123"
+}
+
+###
+
+### Refresh Token
+POST http://localhost:3001/api/auth/refresh
+Content-Type: application/json
+
+###
+
+### Logout
+POST http://localhost:3001/api/auth/logout
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Seed Admin (Development Only)
+POST http://localhost:3001/api/auth/seed-admin
+Content-Type: application/json
+
+{
+  "email": "admin@admin.com",
+  "password": "admin123"
+}
+
+###
+
+### 2. PLEDGE ENDPOINTS (Public)
+
+### Submit New Pledge
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "John Doe",
+  "phoneNumber": "+1234567890",
+  "email": "john.doe@example.com",
+  "amount": 100.50,
+  "message": "Supporting the Aleppo relief campaign"
+}
+
+###
+
+### Submit Anonymous Pledge
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "phoneNumber": "+1234567890",
+  "email": "anonymous@example.com",
+  "amount": 50.00,
+  "message": "Anonymous donation for Aleppo"
+}
+
+###
+
+### Get Public Pledges
+GET http://localhost:3001/api/pledges/public?limit=10
+
+###
+
+### Get Pledge Statistics
+GET http://localhost:3001/api/pledges/stats
+
+###
+
+### 3. ADMIN ENDPOINTS (Require Authentication)
+
+### Get All Pledges (Admin)
+GET http://localhost:3001/api/pledges?page=1&limit=20&pledgeStatus=confirmed&sortBy=createdAt&sortOrder=desc
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get Pledge by ID (Admin)
+GET http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Update Pledge Status (Admin)
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "pledgeStatus": "confirmed"
+}
+
+###
+
+### Update Pledge Details (Admin)
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "fullName": "Updated Name",
+  "message": "Updated message",
+  "pledgeStatus": "confirmed"
+}
+
+###
+
+### Update Payment Method (Admin)
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "paymentMethod": "received",
+  "pledgeStatus": "confirmed"
+}
+
+###
+
+### Erase PII from Pledge (Admin)
+DELETE http://localhost:3001/api/pledges/{{pledgeId}}/erase
+Authorization: Bearer {{accessToken}}
+
+###
+
+### 4. TEST SCENARIOS
+
+### Test 1: Complete Pledge Flow
+# Step 1: Submit pledge
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Test User",
+  "phoneNumber": "+1234567890",
+  "email": "test@example.com",
+  "amount": 25.00,
+  "message": "Test pledge"
+}
+
+###
+
+# Step 2: Login as admin
+POST http://localhost:3001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@donationhub.com",
+  "password": "admin123"
+}
+
+###
+
+# Step 3: Get all pledges
+GET http://localhost:3001/api/pledges
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNkMTI3N2E4MTE4YWVmYWQ3ZGJhZGQiLCJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1ODI3MDA3OCwiZXhwIjoxNzU4MjcwOTc4fQ.-tK-adn9Hiwd__u_a6hN4dY0nFnic0Fw3snHQNS-rnU
+
+###
+
+# Step 4: Update pledge status
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "pledgeStatus": "confirmed"
+}
+
+###
+
+### Test 2: Rate Limiting Test
+# Submit multiple pledges quickly to test rate limiting
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "phoneNumber": "+1234567890",
+  "email": "test1@example.com",
+  "amount": 10.00
+}
+
+###
+
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "phoneNumber": "+1234567891",
+  "email": "test2@example.com",
+  "amount": 20.00
+}
+
+###
+
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "phoneNumber": "+1234567892",
+  "email": "test3@example.com",
+  "amount": 30.00
+}
+
+###
+
+### Test 3: Validation Tests
+
+### Invalid Email
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Test User",
+  "phoneNumber": "+1234567890",
+  "email": "invalid-email",
+  "amount": 25.00
+}
+
+###
+
+### Missing Required Fields
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Test User"
+}
+
+###
+
+### Invalid Amount
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "phoneNumber": "+1234567890",
+  "email": "test@example.com",
+  "amount": -10.00
+}
+
+###
+
+### Invalid Phone Number
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Test User",
+  "phoneNumber": "invalid-phone",
+  "email": "test@example.com",
+  "amount": 25.00
+}
+
+###
+
+### Missing Phone Number (Required Field)
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Test User",
+  "email": "test@example.com",
+  "amount": 25.00
+}
+
+###
+
+### Test 4: Authentication Tests
+
+### Access Protected Route Without Token
+GET http://localhost:3001/api/pledges
+
+###
+
+### Access Protected Route With Invalid Token
+GET http://localhost:3001/api/pledges
+Authorization: Bearer invalid_token
+
+###
+
+### Test 5: Socket.IO Connection Test
+# Note: Socket.IO testing requires a WebSocket client
+# You can test this in the browser console:
+# const socket = io('http://localhost:3001', { auth: { token: 'your_token' } });
+# socket.on('new-pledge', (data) => console.log('New pledge:', data));
+# socket.on('stats-update', (data) => console.log('Stats update:', data));
+
+###
+
+### 6. PERFORMANCE TESTS
+
+### Get Large Number of Pledges
+GET http://localhost:3001/api/pledges?limit=100
+
+###
+
+### Get Statistics Multiple Times
+GET http://localhost:3001/api/pledges/stats
+
+###
+
+GET http://localhost:3001/api/pledges/stats
+
+###
+
+GET http://localhost:3001/api/pledges/stats
+
+###
+
+### 7. ERROR HANDLING TESTS
+
+### Non-existent Pledge ID
+GET http://localhost:3001/api/pledges/nonexistent_id
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Invalid JSON
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "invalid": json
+}
+
+###
+
+### Missing Content-Type
+POST http://localhost:3001/api/pledges
+
+{
+  "phoneNumber": "+1234567890",
+  "email": "test@example.com",
+  "amount": 25.00
+}
+
+###
+
+### 8. SECURITY TESTS
+
+### SQL Injection Attempt
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "'; DROP TABLE pledges; --",
+  "phoneNumber": "+1234567890",
+  "email": "test@example.com",
+  "amount": 25.00
+}
+
+###
+
+### XSS Attempt
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "<script>alert('XSS')</script>",
+  "phoneNumber": "+1234567890",
+  "email": "test@example.com",
+  "amount": 25.00,
+  "message": "<img src=x onerror=alert('XSS')>"
+}
+
+###
+
+### 9. BULK OPERATIONS
+
+### Submit Multiple Pledges
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Bulk Test 1",
+  "phoneNumber": "+1234567890",
+  "email": "bulk1@example.com",
+  "amount": 10.00
+}
+
+###
+
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Bulk Test 2",
+  "phoneNumber": "+1234567891",
+  "email": "bulk2@example.com",
+  "amount": 20.00
+}
+
+###
+
+POST http://localhost:3001/api/pledges
+Content-Type: application/json
+
+{
+  "fullName": "Bulk Test 3",
+  "phoneNumber": "+1234567892",
+  "email": "bulk3@example.com",
+  "amount": 30.00
+}
+
+###
+
+### 10. CLEANUP OPERATIONS
+
+### Get All Pledges for Cleanup
+GET http://localhost:3001/api/pledges?limit=100
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Erase PII from Test Pledges
+DELETE http://localhost:3001/api/pledges/{{pledgeId}}/erase
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Notes:
+### 1. Replace {{accessToken}} with actual JWT token from login response
+### 2. Replace {{pledgeId}} with actual pledge ID from responses
+### 3. Make sure MongoDB is running before testing
+### 4. Some tests may require admin user to be seeded first
+### 5. Rate limiting tests may need to be run multiple times
+### 6. Socket.IO tests require WebSocket client (browser or specialized tool)
+### 7. Required fields: phoneNumber, amount
+### 8. Optional fields: fullName, email, message
+### 9. Valid pledgeStatus values: 'pending', 'confirmed', 'rejected'
+### 10. Valid paymentMethod values: 'received', 'pledged'
+### 11. Phone number must match pattern: /^[\+]?[1-9][\d]{0,15}$/
+### 12. Amount must be between 1 and 1,000,000
+### 13. fullName max length: 100 characters
+### 14. message max length: 500 characters

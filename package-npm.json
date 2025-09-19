@@ -1,0 +1,43 @@
+{
+  "name": "donation-hub",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Donation Hub - Single Campaign Donation Platform",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "cd apps/api && npm run dev",
+    "dev:web": "cd apps/web && npm run dev",
+    "build": "npm run build:types && npm run build:api && npm run build:web",
+    "build:types": "cd packages/types && npm run build",
+    "build:api": "cd apps/api && npm run build",
+    "build:web": "cd apps/web && npm run build",
+    "lint": "npm run lint:api && npm run lint:web",
+    "lint:api": "cd apps/api && npm run lint",
+    "lint:web": "cd apps/web && npm run lint",
+    "type-check": "npm run type-check:types && npm run type-check:api && npm run type-check:web",
+    "type-check:types": "cd packages/types && npm run type-check",
+    "type-check:api": "cd apps/api && npm run type-check",
+    "type-check:web": "cd apps/web && npm run type-check",
+    "clean": "npm run clean:types && npm run clean:api && npm run clean:web",
+    "clean:types": "cd packages/types && npm run clean",
+    "clean:api": "cd apps/api && npm run clean",
+    "clean:web": "cd apps/web && npm run clean",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "db:seed": "cd apps/api && npm run db:seed",
+    "install:all": "npm install && npm run install:workspaces",
+    "install:workspaces": "npm run install:types && npm run install:api && npm run install:web && npm run install:ui",
+    "install:types": "cd packages/types && npm install",
+    "install:api": "cd apps/api && npm install",
+    "install:web": "cd apps/web && npm install",
+    "install:ui": "cd packages/ui && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  }
+}

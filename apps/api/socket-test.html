@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Hub - Socket.IO Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .connected { background-color: #d4edda; color: #155724; }
+        .disconnected { background-color: #f8d7da; color: #721c24; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+        .log {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .pledge-item {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 10px;
+            margin: 5px 0;
+        }
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin: 10px 0;
+        }
+        .stat-item {
+            background-color: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🍃 Donation Hub - Socket.IO Test</h1>
+        
+        <div id="connectionStatus" class="status disconnected">
+            Disconnected
+        </div>
+
+        <div>
+            <label>API URL:</label>
+            <input type="text" id="apiUrl" value="http://localhost:3001" placeholder="http://localhost:3001">
+        </div>
+
+        <div>
+            <label>Access Token (optional for admin features):</label>
+            <input type="text" id="accessToken" placeholder="JWT token from login">
+        </div>
+
+        <div>
+            <button id="connectBtn" onclick="connect()">Connect</button>
+            <button id="disconnectBtn" onclick="disconnect()" disabled>Disconnect</button>
+            <button onclick="clearLog()">Clear Log</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>📊 Live Statistics</h2>
+        <div class="stats">
+            <div class="stat-item">
+                <div>Total Pledges</div>
+                <div id="totalCount">0</div>
+            </div>
+            <div class="stat-item">
+                <div>Total Amount</div>
+                <div id="totalAmount">$0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>💝 Live Pledge Feed</h2>
+        <div id="pledgeFeed"></div>
+    </div>
+
+    <div class="container">
+        <h2>📝 Test Pledge Submission</h2>
+        <div>
+            <label>Donor Name:</label>
+            <input type="text" id="donorName" placeholder="John Doe (optional)">
+        </div>
+        <div>
+            <label>Email:</label>
+            <input type="email" id="email" placeholder="john@example.com">
+        </div>
+        <div>
+            <label>Amount:</label>
+            <input type="number" id="amount" placeholder="100.00" step="0.01" min="1">
+        </div>
+        <div>
+            <label>Message:</label>
+            <textarea id="message" placeholder="Supporting Aleppo relief efforts (optional)"></textarea>
+        </div>
+        <button onclick="submitPledge()">Submit Pledge</button>
+    </div>
+
+    <div class="container">
+        <h2>📋 Event Log</h2>
+        <div id="log" class="log"></div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script>
+        let socket = null;
+        let isConnected = false;
+
+        function log(message, type = 'info') {
+            const logElement = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: #666;">[${timestamp}]</span> ${message}`;
+            logElement.appendChild(logEntry);
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function updateConnectionStatus(status, message) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.className = `status ${status}`;
+            statusElement.textContent = message;
+            
+            document.getElementById('connectBtn').disabled = isConnected;
+            document.getElementById('disconnectBtn').disabled = !isConnected;
+        }
+
+        function connect() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const accessToken = document.getElementById('accessToken').value;
+
+            if (socket) {
+                socket.disconnect();
+            }
+
+            log(`Connecting to ${apiUrl}...`);
+            
+            socket = io(apiUrl, {
+                auth: {
+                    token: accessToken || undefined
+                },
+                transports: ['websocket', 'polling']
+            });
+
+            socket.on('connect', () => {
+                isConnected = true;
+                updateConnectionStatus('connected', 'Connected to server');
+                log('✅ Connected to server', 'info');
+            });
+
+            socket.on('disconnect', (reason) => {
+                isConnected = false;
+                updateConnectionStatus('disconnected', `Disconnected: ${reason}`);
+                log(`❌ Disconnected: ${reason}`, 'error');
+            });
+
+            socket.on('connect_error', (error) => {
+                isConnected = false;
+                updateConnectionStatus('error', `Connection error: ${error.message}`);
+                log(`❌ Connection error: ${error.message}`, 'error');
+            });
+
+            socket.on('new-pledge', (data) => {
+                log(`💝 New pledge: ${data.pledge.donorName || 'Anonymous'} - $${data.pledge.amount}`, 'info');
+                addPledgeToFeed(data.pledge);
+            });
+
+            socket.on('stats-update', (data) => {
+                log(`📊 Stats update: ${data.totalCount} pledges, $${data.totalAmount}`, 'info');
+                updateStats(data);
+            });
+
+            socket.on('pledge-updated', (data) => {
+                log(`🔄 Pledge updated: ${data.pledge._id}`, 'info');
+            });
+
+            socket.on('error', (error) => {
+                log(`❌ Socket error: ${error.message}`, 'error');
+            });
+        }
+
+        function disconnect() {
+            if (socket) {
+                socket.disconnect();
+                socket = null;
+            }
+        }
+
+        function clearLog() {
+            document.getElementById('log').innerHTML = '';
+        }
+
+        function addPledgeToFeed(pledge) {
+            const feedElement = document.getElementById('pledgeFeed');
+            const pledgeElement = document.createElement('div');
+            pledgeElement.className = 'pledge-item';
+            pledgeElement.innerHTML = `
+                <strong>${pledge.donorName || 'Anonymous'}</strong> - $${pledge.amount}
+                <br><small>${new Date(pledge.createdAt).toLocaleString()}</small>
+            `;
+            feedElement.insertBefore(pledgeElement, feedElement.firstChild);
+            
+            // Keep only last 10 pledges
+            while (feedElement.children.length > 10) {
+                feedElement.removeChild(feedElement.lastChild);
+            }
+        }
+
+        function updateStats(data) {
+            document.getElementById('totalCount').textContent = data.totalCount.toLocaleString();
+            document.getElementById('totalAmount').textContent = `$${data.totalAmount.toLocaleString()}`;
+        }
+
+        async function submitPledge() {
+            const donorName = document.getElementById('donorName').value;
+            const email = document.getElementById('email').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const message = document.getElementById('message').value;
+
+            if (!email || !amount) {
+                alert('Email and amount are required');
+                return;
+            }
+
+            const apiUrl = document.getElementById('apiUrl').value;
+            
+            try {
+                const response = await fetch(`${apiUrl}/api/pledges`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        donorName: donorName || undefined,
+                        contact: {
+                            email: email
+                        },
+                        amount: amount,
+                        message: message || undefined
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    log(`✅ Pledge submitted successfully: ${data.data._id}`, 'info');
+                    // Clear form
+                    document.getElementById('donorName').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('amount').value = '';
+                    document.getElementById('message').value = '';
+                } else {
+                    log(`❌ Pledge submission failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ Network error: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-connect on page load
+        window.addEventListener('load', () => {
+            log('🚀 Socket.IO Test Page Loaded', 'info');
+            log('Click "Connect" to start testing', 'info');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+### Donation Hub API Tests
+### Base URL: http://localhost:3001
+
+### Variables
+@baseUrl = http://localhost:3001
+@apiUrl = {{baseUrl}}/api
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGNkMTI3N2E4MTE4YWVmYWQ3ZGJhZGQiLCJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1ODI3ODM0NSwiZXhwIjoxNzU4MzMyMzQ1fQ.9NSG_CvcSC_lRLESsPj9_Q9APhjmg44Epn7ML51OKAc
+@refreshToken = your_refresh_token_here   
+@pledgeId = 68cd30bf2972c5df81b2d8d2    

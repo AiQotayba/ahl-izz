@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Somar Font - Local Files */
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/Somar-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/Somar-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/Somar-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Somar';
+  src: url('/fonts/Somar-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Islamic geometric pattern background */
+.islamic-pattern {
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(30, 123, 107, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(184, 155, 47, 0.1) 0%, transparent 50%),
+    linear-gradient(45deg, rgba(30, 123, 107, 0.05) 25%, transparent 25%),
+    linear-gradient(-45deg, rgba(184, 155, 47, 0.05) 25%, transparent 25%);
+  background-size: 100px 100px, 100px 100px, 50px 50px, 50px 50px;
+  background-position: 0 0, 50px 50px, 0 0, 25px 25px;
+}
+
+/* Custom background with specific positioning */
+.custom-bg {
+  background-image: url('/bg.png');
+  background-size: 3717px 2091px;
+  background-position: -385px -181px;
+  background-repeat: no-repeat;
+  opacity: 0.07;
+}
+
+/* Ensure content is above background */
+.content-layer {
+  position: relative;
+  z-index: 10;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.5rem;
+
+    /* Custom donation colors */
+    --donation-gold: #B89B2F;
+    --donation-teal: #1E7B6B;
+    --donation-dark-teal: #2F4F4F;
+    --donation-yellow: #FDD835;
+    --donation-olive: #A8B02F;
+    --donation-green: #20B2AA;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
