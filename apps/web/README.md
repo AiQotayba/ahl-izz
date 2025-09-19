@@ -1,8 +1,12 @@
 # أهل العز لا ينسون - منصة التبرعات
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/your-username/ahlel-izz)
+
 ## نظرة عامة
 
 منصة تبرعات مخصصة لحملة "أهل العز لا ينسون" لدعم ريف حلب الجنوبي في مجالات التعليم والصحة ومياه الشرب.
+
+🌐 **Live Demo**: [ahlel-izz.vercel.app](https://ahlel-izz.vercel.app)
 
 ## الميزات الرئيسية
 
@@ -124,6 +128,39 @@ npm run build
 ```bash
 npm start
 ```
+
+## 🚀 النشر على Vercel
+
+### النشر السريع
+```bash
+# تثبيت Vercel CLI
+npm i -g vercel
+
+# تسجيل الدخول
+vercel login
+
+# النشر
+vercel --prod
+```
+
+### النشر عبر GitHub
+1. ادفع الكود إلى GitHub
+2. اذهب إلى [vercel.com](https://vercel.com)
+3. استورد المشروع من GitHub
+4. اختر مجلد `apps/web` كجذر المشروع
+5. أضف متغيرات البيئة المطلوبة
+
+### متغيرات البيئة المطلوبة
+```bash
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/donation-hub
+JWT_SECRET=your-super-secret-jwt-key-here
+JWT_REFRESH_SECRET=your-super-secret-refresh-key-here
+NEXT_PUBLIC_API_URL=https://your-api-domain.com
+ADMIN_EMAIL=admin@ahlel-izz.com
+ADMIN_PASSWORD=your-secure-password
+```
+
+📖 **دليل النشر الكامل**: راجع [DEPLOYMENT.md](./DEPLOYMENT.md)
 
 ## SEO والتحسين
 
