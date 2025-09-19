@@ -112,7 +112,7 @@ apps/web/
 ├── app/                  # Next.js App Router
 │   ├── layout.tsx        # Root layout
 │   ├── page.tsx          # Home page
-│   ├── form/             # Donation form
+│   ├── donate/           # Donation donate
 │   ├── admin/            # Admin panel
 │   ├── globals.css       # Global styles
 │   ├── sitemap.ts        # SEO sitemap

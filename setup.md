@@ -43,7 +43,7 @@ donation-hub/
 │  ├─ web/                  # Next.js frontend
 │  │   ├─ app/
 │  │   │   ├─ page.tsx           # Home page
-│  │   │   ├─ form/page.tsx      # Pledge form
+│  │   │   ├─ donate/page.tsx      # Pledge donate
 │  │   │   ├─ admin/
 │  │   │   │   ├─ layout.tsx
 │  │   │   │   ├─ users/page.tsx
