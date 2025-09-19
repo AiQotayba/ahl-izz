@@ -450,6 +450,6 @@ Authorization: Bearer {{accessToken}}
 ### 9. Valid pledgeStatus values: 'pending', 'confirmed', 'rejected'
 ### 10. Valid paymentMethod values: 'received', 'pledged'
 ### 11. Phone number must match pattern: /^[\+]?[1-9][\d]{0,15}$/
-### 12. Amount must be between 1 and 1,000,000
+### 12. Amount must be min 1 
 ### 13. fullName max length: 100 characters
 ### 14. message max length: 500 characters

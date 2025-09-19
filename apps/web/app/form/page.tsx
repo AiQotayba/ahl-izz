@@ -8,22 +8,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Heart, ArrowLeft, CheckCircle } from 'lucide-react';
+import { PhoneInputField } from '@/components/ui/phone-input';
+import { Heart, ArrowLeft, CheckCircle, ArrowRight, Mail, User } from 'lucide-react';
 import Link from 'next/link';
 import { pledgeAPI } from '@/lib/api';
+import { Logo } from '@/components/Logo';
+import { cn } from '@/lib/utils';
+import Image from 'next/image';
 
 const pledgeSchema = z.object({
-  donorName: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name cannot exceed 100 characters').optional().or(z.literal('')),
+  donorName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل').max(100, 'الاسم لا يمكن أن يتجاوز 100 حرف').optional().or(z.literal('')),
   contact: z.object({
-    email: z.string().email('Please enter a valid email address').optional().or(z.literal('')),
-    phone: z.string().regex(/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number').optional().or(z.literal('')),
+    email: z.string().email('يرجى إدخال بريد إلكتروني صحيح').optional().or(z.literal('')),
+    phone: z.string().optional().or(z.literal('')),
   }).refine(data => data.email || data.phone, {
-    message: 'At least one contact method (email or phone) is required',
+    message: 'مطلوب طريقة اتصال واحدة على الأقل (البريد الإلكتروني أو الهاتف)',
     path: ['contact']
   }),
-  amount: z.number().min(1, 'Amount must be at least $1').max(1000000, 'Amount cannot exceed $1,000,000'),
-  message: z.string().max(500, 'Message cannot exceed 500 characters').optional().or(z.literal('')),
+  amount: z.number().min(1, 'المبلغ يجب أن يكون دولار واحد على الأقل'),
+  message: z.string().max(500, 'الرسالة لا يمكن أن تتجاوز 500 حرف').optional().or(z.literal('')),
 });
 
 type PledgeFormData = z.infer<typeof pledgeSchema>;
@@ -38,6 +41,8 @@ export default function PledgeFormPage() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<PledgeFormData>({
     resolver: zodResolver(pledgeSchema),
     defaultValues: {
@@ -68,7 +73,7 @@ export default function PledgeFormPage() {
       };
 
       const response = await pledgeAPI.submit(cleanedData);
-      
+
       if (response.data.success) {
         setIsSuccess(true);
         reset();
@@ -84,178 +89,238 @@ export default function PledgeFormPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
-              <CheckCircle className="h-8 w-8 text-green-600" />
-            </div>
-            <CardTitle className="text-2xl text-green-600">Thank You!</CardTitle>
-            <CardDescription>
-              Your pledge has been submitted successfully. We appreciate your support for the Aleppo relief campaign.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Link href="/" className="block">
-              <Button className="w-full">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Home
+      <div
+        className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-6 relative m-auto"
+        style={{
+          backgroundImage: 'url(/bg2.png)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+        dir="rtl"
+      >
+        <div className="max-w-2xl mx-auto text-center">
+          {/* Logo Section */}
+          <div className="flex justify-center mb-8">
+            <Logo />
+          </div>
+
+          <Card className="w-full max-w-md mx-auto bg-white/98 backdrop-blur-sm border-0 shadow-2xl ring-1 ring-black/5">
+            <CardHeader className="text-center pb-6">
+              <div className="mx-auto mb-6 h-20 w-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-lg">
+                <CheckCircle className="h-10 w-10 text-green-600" />
+              </div>
+              <CardTitle className="text-3xl text-green-600 font-bold mb-3">شكراً لك!</CardTitle>
+              <CardDescription className="text-gray-700 text-lg leading-relaxed">
+                تم إرسال تبرعك بنجاح. نقدر دعمك لأهل ريف حلب الجنوبي.
+                <br />
+                <strong>أهل العز لا ينسون واجبهم تجاه مجتمعهم</strong>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Link href="/" className="block">
+                <Button className="w-full bg-gradient-to-r from-[#1E7B6B] to-[#2F4F4F] hover:from-[#2F4F4F] hover:to-[#1E7B6B] text-white font-bold py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                  العودة للصفحة الرئيسية
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                className="w-full border-2 border-[#1E7B6B] text-[#1E7B6B] hover:bg-[#1E7B6B] hover:text-white font-semibold py-3 text-lg transition-all duration-300"
+                onClick={() => setIsSuccess(false)}
+              >
+                تقديم تبرع آخر
               </Button>
-            </Link>
-            <Button 
-              variant="outline" 
-              className="w-full"
-              onClick={() => setIsSuccess(false)}
-            >
-              Make Another Pledge
-            </Button>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
-          </Link>
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Heart className="h-8 w-8 text-red-500" />
-            <h1 className="text-3xl font-bold text-gray-900">Make a Pledge</h1>
+    <div
+      className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-6 relative m-auto"
+      style={{
+        backgroundImage: 'url(/bg2.png)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+      dir="rtl"
+    >
+      <div className="max-w-4xl mx-auto w-full">
+        {/* Logo Section */}
+        <div className="flex justify-center mb-8">
+          <Logo />
+        </div>
+        <div className="  bg-white rounded-[17px] shadow-lg overflow-hidden p-5 justify-center items-center">
+          {/* Header Section */}
+          <div className=" px-6 py-4">
+            <div className="flex items-center justify-center gap-3">
+              {/* Icon */}
+              <div className="w-[54px] h-[53px] rounded-[10px] border-[1px] p-1 bg-[#056D5E] flex items-center justify-center">
+                <Image src="/mdi_donation.png" alt="Hand" width={30} height={30} />
+              </div>
+
+              {/* Title */}
+              <h2 className={cn("h-[55px] font-somar font-bold text-4xl leading-none tracking-tight text-right",
+                " flex items-center text-[#056D5E]")}>
+                أهل العز لايُنسون
+              </h2>
+            </div>
+            <p className="text-xl text-gray-700 font-medium leading-relaxed w-full text-center pt-4">
+              ساهم في دعم التعليم والصحة ومياه الشرب في ريف حلب الجنوبي
+            </p>
           </div>
-          <p className="text-lg text-gray-600">
-            Support the Aleppo relief campaign with your donation
-          </p>
+
+        </div>
+        {/* Header */}
+        <div className="text-center mb-8 *:font-somar">
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Pledge Information</CardTitle>
-            <CardDescription>
-              Fill out the form below to make your pledge. All information is secure and will be used only for campaign purposes.
+        <Card className="bg-white backdrop-blur-sm border-0 shadow-2xl ring-1 ring-black/5">
+          <CardHeader className="pb-6">
+            <CardTitle className="text-3xl font-bold text-[#1E7B6B] text-center mb-2">معلومات التبرع</CardTitle>
+            <CardDescription className="text-center text-gray-700 text-lg leading-relaxed">
+              املأ النموذج أدناه لتقديم تبرعك لدعم ريف حلب الجنوبي. جميع المعلومات آمنة وستستخدم فقط لأغراض الحملة.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Donor Name */}
-              <div className="space-y-2">
-                <Label htmlFor="donorName">Donor Name (Optional)</Label>
-                <Input
-                  id="donorName"
-                  placeholder="Enter your name or leave blank for anonymous"
-                  {...register('donorName')}
-                />
-                {errors.donorName && (
-                  <p className="text-sm text-red-600">{errors.donorName.message}</p>
-                )}
-              </div>
+              <Input
+                id="donorName"
+                label="اسم المتبرع"
+                optional
+                placeholder="أدخل اسمك أو اتركه فارغاً للتبرع المجهول"
+                icon={<User className="h-4 w-4" />}
+                error={errors.donorName?.message}
+                dir="rtl"
+                {...register('donorName')}
+              />
 
               {/* Contact Information */}
               <div className="space-y-4">
-                <Label>Contact Information *</Label>
-                <div className="space-y-2">
+                <h3 className="text-[#1E7B6B] font-semibold text-base">معلومات الاتصال *</h3>
+                <div className="space-y-4">
                   <Input
                     type="email"
-                    placeholder="Email address"
+                    label="البريد الإلكتروني"
+                    placeholder="البريد الإلكتروني"
+                    icon={<Mail className="h-4 w-4" />}
+                    error={errors.contact?.email?.message}
+                    dir="ltr"
                     {...register('contact.email')}
                   />
-                  {errors.contact?.email && (
-                    <p className="text-sm text-red-600">{errors.contact.email.message}</p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Input
-                    type="tel"
-                    placeholder="Phone number"
-                    {...register('contact.phone')}
+
+                  <PhoneInputField
+                    label="رقم الهاتف"
+                    placeholder="رقم الهاتف"
+                    value={watch('contact.phone')}
+                    onChange={(value) => setValue('contact.phone', value || '')}
+                    error={errors.contact?.phone?.message}
+                    dir="ltr"
                   />
-                  {errors.contact?.phone && (
-                    <p className="text-sm text-red-600">{errors.contact.phone.message}</p>
-                  )}
                 </div>
                 {errors.contact && (
-                  <p className="text-sm text-red-600">{errors.contact.message}</p>
+                  <p className="text-sm text-red-600 font-medium bg-red-50 p-2 rounded-md border border-red-200">{errors.contact.message}</p>
                 )}
-                <p className="text-sm text-gray-500">
-                  At least one contact method is required for verification purposes.
-                </p>
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-sm text-blue-800 font-medium">
+                    💡 مطلوب طريقة اتصال واحدة على الأقل لأغراض التحقق والتواصل معك حول تبرعك.
+                  </p>
+                </div>
               </div>
 
               {/* Amount */}
-              <div className="space-y-2">
-                <Label htmlFor="amount">Pledge Amount *</Label>
-                <div className="relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">$</span>
-                  <Input
-                    id="amount"
-                    type="number"
-                    min="1"
-                    max="1000000"
-                    step="0.01"
-                    placeholder="0.00"
-                    className="pl-8"
-                    {...register('amount', { valueAsNumber: true })}
-                  />
-                </div>
-                {errors.amount && (
-                  <p className="text-sm text-red-600">{errors.amount.message}</p>
-                )}
+              <Input
+                id="amount"
+                type="number"
+                label="مبلغ التبرع"
+                required
+                min="1"
+                step="0.01"
+                placeholder="0.00"
+                icon={<span className="text-gray-600 font-semibold text-lg">$</span>}
+                error={errors.amount?.message}
+                dir="ltr"
+                {...register('amount', { valueAsNumber: true })}
+              />
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-sm text-green-800 font-medium">
+                  💰 الحد الأدنى: $1 - كل دولار يساهم في إعادة بناء المستقبل
+                </p>
               </div>
 
               {/* Message */}
-              <div className="space-y-2">
-                <Label htmlFor="message">Message (Optional)</Label>
-                <Textarea
-                  id="message"
-                  placeholder="Add a message of support (optional)"
-                  rows={4}
-                  {...register('message')}
-                />
-                {errors.message && (
-                  <p className="text-sm text-red-600">{errors.message.message}</p>
-                )}
+              <Textarea
+                id="message"
+                label="رسالة"
+                optional
+                placeholder="أضف رسالة دعم (اختياري)"
+                rows={4}
+                error={errors.message?.message}
+                dir="rtl"
+                {...register('message')}
+              />
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                <p className="text-sm text-gray-700 font-medium">
+                  📝 يمكنك إضافة رسالة دعم أو توجيهات خاصة لأهل ريف حلب الجنوبي (حد أقصى 500 حرف)
+                </p>
               </div>
 
               {/* Error Message */}
               {error && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-                  <p className="text-sm text-red-600">{error}</p>
+                <div className="p-4 bg-red-50 border-2 border-red-200 rounded-lg shadow-sm">
+                  <p className="text-sm text-red-700 font-semibold flex items-center">
+                    <span className="ml-2">⚠️</span>
+                    {error}
+                  </p>
                 </div>
               )}
 
               {/* Submit Button */}
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    <Heart className="mr-2 h-4 w-4" />
-                    Submit Pledge
-                  </>
-                )}
-              </Button>
+              <div className="pt-4">
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-[#1E7B6B] to-[#2F4F4F] hover:from-[#2F4F4F] hover:to-[#1E7B6B] text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="ml-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      جاري الإرسال...
+                    </>
+                  ) : (
+                    <>
+                      <Heart className="ml-2 h-5 w-5" />
+                      ساهم في إعادة البناء
+                    </>
+                  )}
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>
 
         {/* Footer Note */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            Your pledge will be reviewed and confirmed before being displayed publicly.
-            All personal information is kept secure and confidential.
-          </p>
+          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl border border-gray-200 shadow-lg">
+            <div className="flex items-center justify-center mb-3">
+              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center ml-2">
+                <span className="text-green-600 text-lg">🔒</span>
+              </div>
+              <h3 className="text-lg font-bold text-[#1E7B6B]">معلومات الأمان</h3>
+            </div>
+            <p className="text-base text-gray-700 leading-relaxed">
+              سيتم مراجعة تبرعك وتأكيده قبل عرضه علناً.
+              <br />
+              جميع المعلومات الشخصية محفوظة بأمان وسرية تامة.
+              <br />
+              <strong>أهل العز لا ينسون واجبهم تجاه مجتمعهم</strong>
+            </p>
+          </div>
         </div>
       </div>
     </div>

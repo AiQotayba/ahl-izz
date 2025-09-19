@@ -45,7 +45,7 @@ export function TotalDonations({ totalAmount = 1000000, isLoading = false }: Tot
           {/* Title */}
           <h2 className={cn("h-[55px] font-somar font-bold text-4xl leading-none tracking-tight text-right",
             " flex items-center text-[#056D5E]")}>
-            اجمالي التبرعات
+            إجمالي التبرعات
           </h2>
         </div>
       </div>

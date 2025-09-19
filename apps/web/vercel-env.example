@@ -1,0 +1,38 @@
+# Database
+MONGODB_URI=mongodb://localhost:27017/donation-hub
+MONGODB_DB_NAME=donation-hub
+
+# JWT Secrets
+JWT_SECRET=your-super-secret-jwt-key-here
+JWT_REFRESH_SECRET=your-super-secret-refresh-key-here
+
+# API Configuration
+API_BASE_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=http://localhost:3001
+
+# Socket.IO
+SOCKET_IO_URL=http://localhost:3001
+
+# Admin Configuration
+ADMIN_EMAIL=admin@ahlel-izz.com
+ADMIN_PASSWORD=your-admin-password
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Security
+BCRYPT_ROUNDS=12
+CORS_ORIGIN=http://localhost:3000
+
+# Logging
+LOG_LEVEL=info
+LOG_FILE_PATH=./logs/app.log
+
+# Vercel Environment Variables
+VERCEL_URL=
+VERCEL_ENV=development
+
+# Production URLs (update these for production)
+NEXT_PUBLIC_SITE_URL=https://ahlel-izz.com
+NEXT_PUBLIC_API_URL=https://api.ahlel-izz.com

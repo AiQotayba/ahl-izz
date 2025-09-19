@@ -16,8 +16,8 @@ export const validatePledgeSubmission = [
     .matches(/^[\+]?[1-9][\d]{0,15}$/)
     .withMessage('Please provide a valid phone number'),
   body('amount')
-    .isFloat({ min: 1, max: 1000000 })
-    .withMessage('Amount must be between 1 and 1,000,000'),
+    .isFloat({ min: 1 })
+    .withMessage('Amount must be min 1  '),
   body('message')
     .optional()
     .isLength({ max: 500 })
@@ -47,8 +47,8 @@ export const validatePledgeUpdate = [
     .customSanitizer(sanitizeText),
   body('amount')
     .optional()
-    .isFloat({ min: 1, max: 1000000 })
-    .withMessage('Amount must be between 1 and 1,000,000')
+    .isFloat({ min: 1 })
+    .withMessage('Amount must be min 1  ')
 ];
 
 // Submit new pledge

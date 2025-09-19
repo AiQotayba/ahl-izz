@@ -14,4 +14,5 @@ export { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 export { Input } from './ui/input';
 export { Label } from './ui/label';
 export { Textarea } from './ui/textarea';
+export { PhoneInputField } from './ui/phone-input';
 export { Skeleton } from './ui/skeleton';

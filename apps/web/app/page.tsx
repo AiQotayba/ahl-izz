@@ -1,20 +1,17 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import Link from 'next/link';
 import { Logo } from '@/components/Logo';
 import { LiveDonations } from '@/components/LiveDonations';
 import { TopDonations } from '@/components/TopDonations';
 import { TotalDonations } from '@/components/TotalDonations';
 import { DonorsCount } from '@/components/DonorsCount';
-
-interface PledgeStats {
-  totalCount: number;
-  totalAmount: number;
-  statusCounts: Record<string, number>;
-}
+import { Button } from '@/components/ui/button';
+import { Heart } from 'lucide-react';
 
 export default function HomePage() {
-  const [stats, setStats] = useState({
+  const [stats] = useState({
     totalAmount: 1000000,
     donorsCount: 2000,
     loading: false

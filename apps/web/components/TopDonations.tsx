@@ -19,9 +19,9 @@ export function TopDonations({ donations }: TopDonationsProps) {
   useEffect(() => {
     // Mock data for demonstration
     const mockDonations: TopDonation[] = [
-      { id: '1', amount: 5000000, companyName: 'شركة الجبل للاستثمار' },
-      { id: '2', amount: 3500000, companyName: 'مجموعة الخليج التجارية' },
-      { id: '3', amount: 2800000, companyName: 'مؤسسة النور الخيرية' },
+      { id: '1', amount: 5000000, companyName: 'مؤسسة أهل العز الخيرية' },
+      { id: '2', amount: 3500000, companyName: 'جمعية دعم ريف حلب' },
+      { id: '3', amount: 2800000, companyName: 'مؤسسة إعادة البناء' },
       { id: '4', amount: 2200000, companyName: 'شركة الأمل للتنمية' },
       { id: '5', amount: 1800000, companyName: 'جمعية الإحسان' },
     ];
