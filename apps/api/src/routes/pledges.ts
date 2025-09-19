@@ -11,7 +11,6 @@ import {
   validatePledgeUpdate
 } from '../controllers/pledgeController';
 import { authenticateToken, requireAdmin } from '../middlewares/authMiddleware';
-import { pledgeRateLimit, adminRateLimit, generalRateLimit } from '../middlewares/rateLimiter';
 
 const router = Router();
 

@@ -8,7 +8,6 @@ import morgan from 'morgan';
 import { config } from './config';
 import { connectDatabase } from './database';
 import { logger } from './utils/logger';
-import { generalRateLimit } from './middlewares/rateLimiter';
 import { setupSocketIO } from './socket';
 
 // Import routes
@@ -55,20 +54,20 @@ app.use(cors({
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Allow requests with no origin (mobile apps, Postman, etc.)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    
+
     // In development, allow all origins
     if (config.NODE_ENV === 'development') {
       return callback(null, true);
     }
-    
+
     // Log the rejected origin for debugging
     logger.warn(`CORS: Rejected origin: ${origin}`);
     logger.info(`CORS: Allowed origins: ${allowedOrigins.join(', ')}`);
-    
+
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -96,8 +95,6 @@ if (config.NODE_ENV === 'development') {
   }));
 }
 
-// Rate limiting
-app.use(generalRateLimit);
 
 // Health check endpoint
 app.get('/', (req, res) => {
@@ -154,11 +151,11 @@ app.use('*', (req, res) => {
 // Global error handler
 app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error('Unhandled error:', error);
-  
+
   res.status(500).json({
     success: false,
-    error: config.NODE_ENV === 'production' 
-      ? 'Internal server error' 
+    error: config.NODE_ENV === 'production'
+      ? 'Internal server error'
       : error.message
   });
 });
@@ -177,7 +174,7 @@ const startServer = async () => {
   try {
     // Connect to database
     await connectDatabase();
-    
+
     // Start HTTP server
     server.listen(config.PORT, () => {
       logger.info(`🚀 Server running on port ${config.PORT}`);
