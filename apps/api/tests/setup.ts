@@ -16,12 +16,16 @@ process.env.BCRYPT_ROUNDS = '4'; // Faster for tests
 process.env.LOG_LEVEL = 'error'; // Reduce log noise in tests
 
 // Global test timeout
-jest.setTimeout(10000);
+if (typeof jest !== 'undefined') {
+  jest.setTimeout(10000);
+}
 
 // Clean up after all tests
-afterAll(async () => {
-  // Close any open connections
-  if (global.mongooseConnection) {
-    await global.mongooseConnection.close();
-  }
-});
+if (typeof afterAll !== 'undefined') {
+  afterAll(async () => {
+    // Close any open connections
+    if ((global as any).mongooseConnection) {
+      await (global as any).mongooseConnection.close();
+    }
+  });
+}

@@ -16,15 +16,30 @@ import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
 
+export interface IPledge {
+  _id?: string;
+  fullName: string;
+  phoneNumber: string;
+  email?: string;
+  amount: number;
+  message?: string;
+
+  // وسيلة الدفع (cash, online...)
+  paymentMethod: 'received' | 'pledged';
+
+  // حالة التعهد
+  pledgeStatus: 'received' | 'pending' | 'confirmed' | 'rejected';
+
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+
 const pledgeSchema = z.object({
-  donorName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل').max(100, 'الاسم لا يمكن أن يتجاوز 100 حرف').optional().or(z.literal('')),
-  contact: z.object({
-    email: z.string().email('يرجى إدخال بريد إلكتروني صحيح').optional().or(z.literal('')),
-    phone: z.string().optional().or(z.literal('')),
-  }).refine(data => data.email || data.phone, {
-    message: 'مطلوب طريقة اتصال واحدة على الأقل (البريد الإلكتروني أو الهاتف)',
-    path: ['contact']
-  }),
+
+  fullName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل').max(100, 'الاسم لا يمكن أن يتجاوز 100 حرف').optional().or(z.literal('')),
+  phoneNumber: z.string().optional().or(z.literal('')),
+  email: z.string().email('يرجى إدخال بريد إلكتروني صحيح').optional().or(z.literal('')),
   amount: z.number().min(1, 'المبلغ يجب أن يكون دولار واحد على الأقل'),
   message: z.string().max(500, 'الرسالة لا يمكن أن تتجاوز 500 حرف').optional().or(z.literal('')),
 });
@@ -46,11 +61,9 @@ export default function PledgeFormPage() {
   } = useForm<PledgeFormData>({
     resolver: zodResolver(pledgeSchema),
     defaultValues: {
-      donorName: '',
-      contact: {
-        email: '',
-        phone: '',
-      },
+      fullName: '',
+      email: '',
+      phoneNumber: '',
       amount: 0,
       message: '',
     },
@@ -64,11 +77,10 @@ export default function PledgeFormPage() {
       // Clean up empty strings
       const cleanedData = {
         ...data,
-        donorName: data.donorName || undefined,
-        contact: {
-          email: data.contact.email || undefined,
-          phone: data.contact.phone || undefined,
-        },
+        fullName: data.fullName || undefined,
+        phoneNumber: data.phoneNumber || undefined,
+        email: data.email || undefined,
+        amount: data.amount || undefined,
         message: data.message || undefined,
       };
 
@@ -78,10 +90,21 @@ export default function PledgeFormPage() {
         setIsSuccess(true);
         reset();
       } else {
-        setError(response.data.error || 'Failed to submit pledge');
+        setError(response.data.error || 'فشل في إرسال التبرع. يرجى المحاولة مرة أخرى.');
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || 'Failed to submit pledge. Please try again.');
+      console.error('Pledge submission error:', err);
+
+      // Handle different types of errors
+      if (err.message) {
+        setError(err.message);
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error);
+      } else if (err.code === 'ERR_NETWORK') {
+        setError('لا يمكن الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.');
+      } else {
+        setError('حدث خطأ غير متوقع. يرجى المحاولة لاحقاً أو التواصل معنا عبر وسائل أخرى.');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -90,7 +113,7 @@ export default function PledgeFormPage() {
   if (isSuccess) {
     return (
       <div
-        className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-6 relative m-auto"
+        className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-4 sm:p-6 relative m-auto"
         style={{
           backgroundImage: 'url(/bg2.png)',
           backgroundSize: 'cover',
@@ -105,7 +128,7 @@ export default function PledgeFormPage() {
             <Logo />
           </div>
 
-          <Card className="w-full max-w-md mx-auto bg-white/98 backdrop-blur-sm border-0 shadow-2xl ring-1 ring-black/5">
+          <Card className="w-full max-w-4xl mx-auto bg-white backdrop-blur-sm border-0 shadow-2xl ring-1 ring-black/5">
             <CardHeader className="text-center pb-6">
               <div className="mx-auto mb-6 h-20 w-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full flex items-center justify-center shadow-lg">
                 <CheckCircle className="h-10 w-10 text-green-600" />
@@ -113,17 +136,9 @@ export default function PledgeFormPage() {
               <CardTitle className="text-3xl text-green-600 font-bold mb-3">شكراً لك!</CardTitle>
               <CardDescription className="text-gray-700 text-lg leading-relaxed">
                 تم إرسال تبرعك بنجاح. نقدر دعمك لأهل ريف حلب الجنوبي.
-                <br />
-                <strong>أهل العز لا ينسون واجبهم تجاه مجتمعهم</strong>
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Link href="/" className="block">
-                <Button className="w-full bg-gradient-to-r from-[#1E7B6B] to-[#2F4F4F] hover:from-[#2F4F4F] hover:to-[#1E7B6B] text-white font-bold py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300">
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                  العودة للصفحة الرئيسية
-                </Button>
-              </Link>
               <Button
                 variant="outline"
                 className="w-full border-2 border-[#1E7B6B] text-[#1E7B6B] hover:bg-[#1E7B6B] hover:text-white font-semibold py-3 text-lg transition-all duration-300"
@@ -140,7 +155,7 @@ export default function PledgeFormPage() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-6 relative m-auto"
+      className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-4 sm:p-6 relative m-auto"
       style={{
         backgroundImage: 'url(/bg2.png)',
         backgroundSize: 'cover',
@@ -179,94 +194,93 @@ export default function PledgeFormPage() {
         <div className="text-center mb-8 *:font-somar">
         </div>
 
-        <Card className="bg-white backdrop-blur-sm border-0 shadow-2xl ring-1 ring-black/5">
-          <CardHeader className="pb-6">
-            <CardTitle className="text-3xl font-bold text-[#1E7B6B] text-center mb-2">معلومات التبرع</CardTitle>
-            <CardDescription className="text-center text-gray-700 text-lg leading-relaxed">
+        <Card className="w-full max-w-4xl mx-auto bg-white backdrop-blur-sm border-0 shadow-2xl ring-1 ring-black/5">
+          <CardHeader className="pb-6 px-4 sm:px-6 lg:px-8">
+            <CardTitle className="text-2xl sm:text-3xl font-bold text-[#1E7B6B] text-center mb-2">معلومات التبرع</CardTitle>
+            <CardDescription className="text-center text-gray-700 text-base sm:text-lg leading-relaxed">
               املأ النموذج أدناه لتقديم تبرعك لدعم ريف حلب الجنوبي. جميع المعلومات آمنة وستستخدم فقط لأغراض الحملة.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6 lg:px-8">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* Donor Name */}
-              <Input
-                id="donorName"
-                label="اسم المتبرع"
-                optional
-                placeholder="أدخل اسمك أو اتركه فارغاً للتبرع المجهول"
-                icon={<User className="h-4 w-4" />}
-                error={errors.donorName?.message}
-                dir="rtl"
-                {...register('donorName')}
-              />
+              {/* Name and Amount Row - Desktop */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+                {/* Donor Name */}
+                <Input
+                  id="fullName"
+                  label="اسم المتبرع"
+                  optional
+                  placeholder="أدخل اسمك أو اتركه فارغاً للتبرع المجهول"
+                  icon={<User className="h-4 w-4" />}
+                  error={errors.fullName?.message}
+                  dir="rtl"
+                  {...register('fullName')}
+                />
 
-              {/* Contact Information */}
+                {/* Amount */}
+                <Input
+                  id="amount"
+                  type="number"
+                  label="مبلغ التبرع"
+                  required
+                  min="1"
+                  step="0.01"
+                  placeholder="0.00"
+                  icon={<span className="text-gray-600 font-semibold text-lg">$</span>}
+                  error={errors.amount?.message}
+                  dir="rtl"
+                  {...register('amount', { valueAsNumber: true })}
+                />
+              </div>
+
+
+              {/* Contact Information Row - Desktop */}
               <div className="space-y-4">
                 <h3 className="text-[#1E7B6B] font-semibold text-base">معلومات الاتصال *</h3>
-                <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+                  {/* Phone */}
+                  <PhoneInputField
+                    label="رقم الهاتف"
+                    placeholder="رقم الهاتف"
+                    value={watch('phoneNumber')}
+                    onChange={(value) => setValue('phoneNumber', value || '')}
+                    error={errors.phoneNumber?.message}
+                    dir="ltr"
+                  />
+                  {/* Email */}
                   <Input
                     type="email"
                     label="البريد الإلكتروني"
                     placeholder="البريد الإلكتروني"
                     icon={<Mail className="h-4 w-4" />}
-                    error={errors.contact?.email?.message}
+                    error={errors.email?.message}
                     dir="ltr"
-                    {...register('contact.email')}
+                    {...register('email')}
                   />
 
-                  <PhoneInputField
-                    label="رقم الهاتف"
-                    placeholder="رقم الهاتف"
-                    value={watch('contact.phone')}
-                    onChange={(value) => setValue('contact.phone', value || '')}
-                    error={errors.contact?.phone?.message}
-                    dir="ltr"
-                  />
                 </div>
-                {errors.contact && (
-                  <p className="text-sm text-red-600 font-medium bg-red-50 p-2 rounded-md border border-red-200">{errors.contact.message}</p>
+                {errors.phoneNumber && (
+                  <p className="text-sm text-red-600 font-medium bg-red-50 p-2 rounded-md border border-red-200">{errors.phoneNumber.message}</p>
                 )}
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                  <p className="text-sm text-blue-800 font-medium">
-                    💡 مطلوب طريقة اتصال واحدة على الأقل لأغراض التحقق والتواصل معك حول تبرعك.
-                  </p>
-                </div>
-              </div>
-
-              {/* Amount */}
-              <Input
-                id="amount"
-                type="number"
-                label="مبلغ التبرع"
-                required
-                min="1"
-                step="0.01"
-                placeholder="0.00"
-                icon={<span className="text-gray-600 font-semibold text-lg">$</span>}
-                error={errors.amount?.message}
-                dir="ltr"
-                {...register('amount', { valueAsNumber: true })}
-              />
-              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="text-sm text-green-800 font-medium">
-                  💰 الحد الأدنى: $1 - كل دولار يساهم في إعادة بناء المستقبل
+                <p className="text-xs sm:text-sm">
+                  مطلوب طريقة اتصال واحدة على الأقل لأغراض التحقق والتواصل معك حول تبرعك.
                 </p>
               </div>
 
               {/* Message */}
-              <Textarea
-                id="message"
-                label="رسالة"
-                optional
-                placeholder="أضف رسالة دعم (اختياري)"
-                rows={4}
-                error={errors.message?.message}
-                dir="rtl"
-                {...register('message')}
-              />
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-                <p className="text-sm text-gray-700 font-medium">
-                  📝 يمكنك إضافة رسالة دعم أو توجيهات خاصة لأهل ريف حلب الجنوبي (حد أقصى 500 حرف)
+              <div className="space-y-3">
+                <Textarea
+                  id="message"
+                  label="رسالة"
+                  optional
+                  placeholder="أضف رسالة دعم (اختياري)"
+                  rows={4}
+                  error={errors.message?.message}
+                  dir="rtl"
+                  {...register('message')}
+                />
+                <p className="text-xs sm:text-sm    ">
+                  يمكنك إضافة رسالة دعم أو توجيهات خاصة لأهل ريف حلب الجنوبي (حد أقصى 500 حرف)
                 </p>
               </div>
 
@@ -281,10 +295,10 @@ export default function PledgeFormPage() {
               )}
 
               {/* Submit Button */}
-              <div className="pt-4">
+              <div className="pt-6">
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-[#1E7B6B] to-[#2F4F4F] hover:from-[#2F4F4F] hover:to-[#1E7B6B] text-white font-bold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+                  className="w-full bg-gradient-to-r from-[#1E7B6B] to-[#2F4F4F] hover:from-[#2F4F4F] hover:to-[#1E7B6B] text-white font-bold py-3 sm:py-4 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -307,23 +321,15 @@ export default function PledgeFormPage() {
         {/* Footer Note */}
         <div className="mt-8 text-center">
           <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl border border-gray-200 shadow-lg">
-            <div className="flex items-center justify-center mb-3">
-              <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center ml-2">
-                <span className="text-green-600 text-lg">🔒</span>
-              </div>
-              <h3 className="text-lg font-bold text-[#1E7B6B]">معلومات الأمان</h3>
-            </div>
             <p className="text-base text-gray-700 leading-relaxed">
               سيتم مراجعة تبرعك وتأكيده قبل عرضه علناً.
               <br />
               جميع المعلومات الشخصية محفوظة بأمان وسرية تامة.
-              <br />
-              <strong>أهل العز لا ينسون واجبهم تجاه مجتمعهم</strong>
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 }
 

@@ -10,7 +10,6 @@
     "lint": "next lint",
     "type-check": "tsc --noEmit",
     "clean": "rm -rf .next",
-    "vercel-build": "next build",
     "deploy": "vercel --prod",
     "deploy-preview": "vercel",
     "analyze": "ANALYZE=true next build"

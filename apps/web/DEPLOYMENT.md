@@ -54,15 +54,29 @@ vercel
 
 ### Required Variables:
 ```bash
+# API Configuration (CRITICAL - Frontend needs this to work)
+NEXT_PUBLIC_API_URL=https://your-api-domain.com
+
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=https://ahlel-izz.vercel.app
+NEXT_PUBLIC_SITE_NAME=أهل العز لا ينسون
+
+# Contact Information
+NEXT_PUBLIC_CONTACT_EMAIL=info@ahlel-izz.com
+NEXT_PUBLIC_CONTACT_PHONE=+963-XXX-XXX-XXX
+
+# Socket.IO (if using real-time features)
+NEXT_PUBLIC_SOCKET_URL=https://your-api-domain.com
+```
+
+### Backend API Variables (if deploying API separately):
+```bash
 # Database
 MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/donation-hub
 
 # JWT Secrets (generate strong secrets)
 JWT_SECRET=your-super-secret-jwt-key-here
 JWT_REFRESH_SECRET=your-super-secret-refresh-key-here
-
-# API Configuration
-NEXT_PUBLIC_API_URL=https://your-api-domain.com
 
 # Admin Configuration
 ADMIN_EMAIL=admin@ahlel-izz.com
@@ -221,7 +235,16 @@ npm install @sentry/nextjs
 
 ### Common Issues:
 
-1. **Build Failures**:
+1. **CORS Errors**:
+   ```
+   Error: CORS error fetch sw.js:54
+   ```
+   **Solution**:
+   - ✅ **Set API URL**: Ensure `NEXT_PUBLIC_API_URL` is set in Vercel
+   - ✅ **API CORS**: Configure your API to allow your Vercel domain
+   - ✅ **Fallback**: The app now shows contact info when API is unavailable
+
+2. **Build Failures**:
    ```bash
    # Check build logs
    vercel logs
@@ -230,17 +253,26 @@ npm install @sentry/nextjs
    npm run build
    ```
 
-2. **Environment Variables**:
+3. **Environment Variables**:
    ```bash
    # Check env vars in Vercel dashboard
    # Ensure all required vars are set
    ```
 
-3. **API Connection**:
+4. **API Connection**:
    ```bash
    # Verify API URL in environment variables
    # Check CORS configuration
    ```
+
+5. **Network Errors**:
+   ```
+   Error: لا يمكن الاتصال بالخادم
+   ```
+   **Solution**:
+   - ✅ **Check API Status**: Ensure your API is running
+   - ✅ **Update API URL**: Set correct `NEXT_PUBLIC_API_URL`
+   - ✅ **Contact Info**: Users can still contact you directly
 
 ### Support:
 - 📧 **Email**: support@ahlel-izz.com

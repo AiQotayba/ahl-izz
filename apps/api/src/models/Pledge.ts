@@ -1,4 +1,6 @@
-import mongoose, { Schema } from 'mongoose'; export interface IPledge {
+import mongoose, { Schema } from 'mongoose';
+
+export interface IPledge {
   _id?: string;
   fullName: string;
   phoneNumber: string;

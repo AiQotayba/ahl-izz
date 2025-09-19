@@ -15,9 +15,14 @@ export const validatePledgeSubmission = [
     .optional()
     .matches(/^[\+]?[1-9][\d]{0,15}$/)
     .withMessage('Please provide a valid phone number'),
+  body('email')
+    .optional()
+    .isEmail()
+    .withMessage('Please provide a valid email address')
+    .normalizeEmail(),
   body('amount')
     .isFloat({ min: 1 })
-    .withMessage('Amount must be min 1  '),
+    .withMessage('Amount must be at least 1'),
   body('message')
     .optional()
     .isLength({ max: 500 })

@@ -33,12 +33,40 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://ahlel-izz.vercel.app',
+  'https://ahlel-izz.com',
+  'https://www.ahlel-izz.com'
+];
+
+// Add custom origins from environment
+if (config.CORS_ORIGIN) {
+  const customOrigins = config.CORS_ORIGIN.split(',').map((origin: string) => origin.trim());
+  allowedOrigins.push(...customOrigins);
+}
+
 app.use(cors({
-  origin: "*",
-  // origin: config.CORS_ORIGIN,
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // In development, allow all origins
+    if (config.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count']
 }));
 
 // Compression middleware
@@ -67,9 +95,39 @@ app.use(generalRateLimit);
 app.get('/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Donation Hub API is running',
-    timestamp: new Date().toISOString(),
-    environment: config.NODE_ENV
+    message: 'أهل العز لا ينسون - API يعمل بنجاح',
+    data: {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      environment: config.NODE_ENV,
+      version: '1.0.0',
+      uptime: process.uptime(),
+      memory: process.memoryUsage(),
+      cors: {
+        allowedOrigins: allowedOrigins.slice(0, 3) // Show first 3 for security
+      }
+    }
+  });
+});
+
+// API info endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'أهل العز لا ينسون - API',
+    data: {
+      name: 'أهل العز لا ينسون API',
+      description: 'منصة التبرعات لدعم ريف حلب الجنوبي',
+      version: '1.0.0',
+      endpoints: {
+        health: '/health',
+        auth: '/api/auth',
+        pledges: '/api/pledges',
+        public: '/api/pledges/public',
+        stats: '/api/pledges/stats'
+      },
+      documentation: 'https://github.com/your-repo/docs'
+    }
   });
 });
 

@@ -9,13 +9,26 @@ const requiredEnvVars = [
   'JWT_REFRESH_SECRET',
   'JWT_ACCESS_EXPIRES_IN',
   'JWT_REFRESH_EXPIRES_IN',
+] as const;
+
+// Optional but recommended
+const recommendedEnvVars = [
   'CORS_ORIGIN',
+  'ADMIN_EMAIL',
+  'ADMIN_PASSWORD',
 ] as const;
 
 // Validate required environment variables
 for (const envVar of requiredEnvVars) {
   if (!process.env[envVar]) {
     throw new Error(`Missing required environment variable: ${envVar}`);
+  }
+}
+
+// Warn about missing recommended environment variables
+for (const envVar of recommendedEnvVars) {
+  if (!process.env[envVar]) {
+    console.warn(`⚠️  Missing recommended environment variable: ${envVar}`);
   }
 }
 
@@ -37,6 +50,10 @@ export const config: any = {
   LOG_LEVEL: process.env.LOG_LEVEL || 'info',
   LOG_FILE: process.env.LOG_FILE || 'logs/app.log',
   SECURITY_LOG_FILE: process.env.SECURITY_LOG_FILE || 'logs/security.log',
+  ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'admin@ahlel-izz.com',
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD,
+  SITE_URL: process.env.SITE_URL || 'https://ahlel-izz.com',
+  API_URL: process.env.API_URL || 'https://api.ahlel-izz.com',
 };
 
 export default config;

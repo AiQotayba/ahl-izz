@@ -168,7 +168,7 @@ SecurityLog {
 * Live feed of pledges
 * Total pledged amount
 
-**Form Page (`/form`)**
+  **Form Page (`/donate`)**
 
 * Submit pledge: donorName, amount, optional message, contact info
 * Client-side validation with Zod
