@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { Providers } from '@/lib/providers';
 
 export const metadata: Metadata = {
   title: 'أهل العز لا ينسون - دعم ريف حلب الجنوبي',
@@ -25,7 +26,9 @@ export default function RootLayout({ children, }: { children: React.ReactNode })
         <meta name="theme-color" content="#1E7B6B" />
       </head>
       <body className="font-sans antialiased">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

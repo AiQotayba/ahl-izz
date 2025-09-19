@@ -16,15 +16,15 @@ import { pledgeRateLimit, adminRateLimit, generalRateLimit } from '../middleware
 const router = Router();
 
 // Public routes
-router.post('/', pledgeRateLimit, validatePledgeSubmission, submitPledge);
-router.get('/public', generalRateLimit, getPublicPledges);
-router.get('/stats', generalRateLimit, getPledgeStats);
+router.post('/', validatePledgeSubmission, submitPledge);
+router.get('/public', getPublicPledges);
+router.get('/stats', getPledgeStats);
 
 // Admin routes
-router.get('/', authenticateToken, requireAdmin, adminRateLimit, getPledges);
-router.get('/:id', authenticateToken, requireAdmin, adminRateLimit, getPledgeById);
-router.put('/:id', authenticateToken, requireAdmin, adminRateLimit, validatePledgeUpdate, updatePledge);
-router.delete('/:id/erase', authenticateToken, requireAdmin, adminRateLimit, erasePledgePII);
+router.get('/', authenticateToken, requireAdmin, getPledges);
+router.get('/:id', authenticateToken, requireAdmin, getPledgeById);
+router.put('/:id', authenticateToken, requireAdmin, validatePledgeUpdate, updatePledge);
+router.delete('/:id/erase', authenticateToken, requireAdmin, erasePledgePII);
 
 export default router;
 

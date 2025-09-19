@@ -39,7 +39,7 @@ export function TotalDonations({ totalAmount = 1000000, isLoading = false }: Tot
         <div className="flex items-center justify-start gap-3">
           {/* Icon */}
           <div className="w-[54px] h-[53px] rounded-[10px] border-[1px] p-1 bg-[#056D5E] flex items-center justify-center">
-            <Image src="/mdi_donation.png" alt="Hand" width={30} height={30} />
+            <Image src="/images/mdi_donation.png" alt="Hand" width={30} height={30} />
           </div>
 
           {/* Title */}

@@ -21,7 +21,7 @@ export default function Error({
     <div
       className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-6 relative m-auto"
       style={{
-        backgroundImage: 'url(/bg2.png)',
+        backgroundImage: 'url(/images/bg2.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',

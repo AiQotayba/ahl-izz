@@ -115,7 +115,7 @@ export default function PledgeFormPage() {
       <div
         className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-4 sm:p-6 relative m-auto"
         style={{
-          backgroundImage: 'url(/bg2.png)',
+          backgroundImage: 'url(/images/bg2.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
@@ -157,7 +157,7 @@ export default function PledgeFormPage() {
     <div
       className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-4 sm:p-6 relative m-auto"
       style={{
-        backgroundImage: 'url(/bg2.png)',
+        backgroundImage: 'url(/images/bg2.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -175,7 +175,7 @@ export default function PledgeFormPage() {
             <div className="flex items-center justify-center gap-3">
               {/* Icon */}
               <div className="w-[54px] h-[53px] rounded-[10px] border-[1px] p-1 bg-[#056D5E] flex items-center justify-center">
-                <Image src="/mdi_donation.png" alt="Hand" width={30} height={30} />
+                <Image src="/images/mdi_donation.png" alt="Hand" width={30} height={30} />
               </div>
 
               {/* Title */}
