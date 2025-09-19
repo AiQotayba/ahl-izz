@@ -2,7 +2,7 @@ import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
-    unoptimized: true, // Disable optimization for local images to fix Vercel issue
+    unoptimized: false, // Disable optimization for local images to fix Vercel issue
   },
   poweredByHeader: false,
   compress: true,
