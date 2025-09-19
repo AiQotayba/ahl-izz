@@ -59,6 +59,7 @@ const Badge = ({ children, className = '' }: { children: React.ReactNode; classN
 export default function PledgesManagement() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [paymentFilter, setPaymentFilter] = useState<string>('all');
   const [selectedPledge, setSelectedPledge] = useState<Pledge | null>(null);
   const queryClient = useQueryClient();
 
@@ -134,8 +135,9 @@ export default function PledgesManagement() {
       pledge.phoneNumber?.includes(searchTerm);
 
     const matchesStatus = statusFilter === 'all' || pledge.pledgeStatus === statusFilter;
+    const matchesPayment = paymentFilter === 'all' || pledge.paymentMethod === paymentFilter;
 
-    return matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus && matchesPayment;
   });
 
   // Loading state
@@ -205,6 +207,17 @@ export default function PledgesManagement() {
             <SelectItem value="pending" className="text-donation-darkTeal font-somar">في انتظار المراجعة</SelectItem>
             <SelectItem value="confirmed" className="text-donation-darkTeal font-somar">تم التأكيد</SelectItem>
             <SelectItem value="rejected" className="text-donation-darkTeal font-somar">تم الرفض</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={paymentFilter} onValueChange={setPaymentFilter} dir="rtl">
+          <SelectTrigger className="w-[180px] border-donation-teal/30 text-donation-darkTeal font-somar">
+            <SelectValue placeholder="فلترة حسب الدفع" />
+          </SelectTrigger>
+          <SelectContent className="bg-white/95 backdrop-blur-sm border-donation-teal/20">
+            <SelectItem value="all" className="text-donation-darkTeal font-somar">جميع طرق الدفع</SelectItem>
+            <SelectItem value="received" className="text-donation-darkTeal font-somar">تم استلام المبلغ</SelectItem>
+            <SelectItem value="pledged" className="text-donation-darkTeal font-somar">تعهد بالدفع</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -291,6 +304,17 @@ export default function PledgesManagement() {
                         {pledge.fullName || 'مجهول'}
                       </h3>
                       {getStatusBadge(pledge.pledgeStatus)}
+                      {pledge.paymentMethod === 'received' ? (
+                        <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" />
+                          تم استلام المبلغ
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          تعهد بالدفع
+                        </Badge>
+                      )}
                       <span className="text-lg font-bold text-donation-gold font-somar">
                         ${pledge.amount.toLocaleString()}
                       </span>
@@ -383,6 +407,22 @@ export default function PledgesManagement() {
                   <p className="text-donation-darkTeal font-somar">
                     {new Date(selectedPledge.createdAt).toLocaleString('ar-SA')}
                   </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-donation-teal font-somar">طريقة الدفع</label>
+                  <div className="mt-1">
+                    {selectedPledge.paymentMethod === 'received' ? (
+                      <Badge className="bg-green-100 text-green-800 flex items-center gap-1 w-fit">
+                        <CheckCircle className="w-3 h-3" />
+                        تم استلام المبلغ
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1 w-fit">
+                        <Clock className="w-3 h-3" />
+                        تعهد بالدفع
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
 

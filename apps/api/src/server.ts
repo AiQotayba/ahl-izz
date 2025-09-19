@@ -35,6 +35,7 @@ app.use(helmet({
 // CORS configuration
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3100',
   'http://localhost:3001',
   'https://ahlel-izz.vercel.app',
   'https://ahlel-izz.com',
@@ -204,4 +205,5 @@ const startServer = async () => {
 startServer();
 
 export { app, server, io };
+
 
