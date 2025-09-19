@@ -58,19 +58,10 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   // Add support for static image optimization
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Removed - causes build error on Vercel
   },
   // Ensure public files are accessible
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
-  // Add support for static file serving
-  async rewrites() {
-    return [
-      {
-        source: '/images/:path*',
-        destination: '/images/:path*',
-      },
-    ]
-  },
 }
 
 export default nextConfig
