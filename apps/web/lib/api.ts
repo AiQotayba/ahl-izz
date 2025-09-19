@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://148.230.118.197:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aleppo.lb-sy.com';
 // const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export const api = axios.create({
