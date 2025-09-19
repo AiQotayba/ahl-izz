@@ -92,7 +92,7 @@ if (config.NODE_ENV === 'development') {
 app.use(generalRateLimit);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/', (req, res) => {
   res.json({
     success: true,
     message: 'أهل العز لا ينسون - API يعمل بنجاح',
