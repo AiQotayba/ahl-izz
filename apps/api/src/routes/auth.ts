@@ -6,7 +6,7 @@ import { authenticateToken } from '../middlewares/authMiddleware';
 const router = Router();
 
 // Public routes
-router.post('/login', loginRateLimit, validateLogin, login);
+router.post('/login', validateLogin, login);
 router.post('/refresh', refreshToken);
 router.post('/logout', authenticateToken, logout);
 

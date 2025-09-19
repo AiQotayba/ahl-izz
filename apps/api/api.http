@@ -38,7 +38,7 @@ Authorization: Bearer {{accessToken}}
 ###
 
 ### Seed Admin (Development Only)
-POST http://localhost:3001/api/auth/seed-admin
+POST https://aleppo.lb-sy.com/api/auth/seed-admin
 Content-Type: application/json
 
 {
