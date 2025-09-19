@@ -71,6 +71,10 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  // Ensure static files are properly served
+  async redirects() {
+    return []
+  },
 }
 
 export default nextConfig
