@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
       },
     ],
     formats: ['image/webp', 'image/avif'],
-    unoptimized: false,
+    unoptimized: true, // Disable optimization for local images to fix Vercel issue
     // Ensure images work on Vercel
     loader: 'default',
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
@@ -62,6 +62,15 @@ const nextConfig: NextConfig = {
   },
   // Ensure public files are accessible
   assetPrefix: process.env.NODE_ENV === 'production' ? '' : '',
+  // Add support for static file serving
+  async rewrites() {
+    return [
+      {
+        source: '/images/:path*',
+        destination: '/images/:path*',
+      },
+    ]
+  },
 }
 
 export default nextConfig

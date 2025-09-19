@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { pledgeAPI } from '@/lib/api';
 import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
+// import Image from 'next/image'; // Temporarily disabled for Vercel compatibility
 
 export interface IPledge {
   _id?: string;
@@ -175,7 +175,7 @@ export default function PledgeFormPage() {
             <div className="flex items-center justify-center gap-3">
               {/* Icon */}
               <div className="w-[54px] h-[53px] rounded-[10px] border-[1px] p-1 bg-[#056D5E] flex items-center justify-center">
-                <Image src="/images/mdi_donation.png" alt="Hand" width={30} height={30} />
+                <img src="/images/mdi_donation.png" alt="Hand" width={30} height={30} />
               </div>
 
               {/* Title */}
