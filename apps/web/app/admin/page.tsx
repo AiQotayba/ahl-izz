@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { StatsCard } from '@/components/StatsCard';
 import { Users, DollarSign, TrendingUp, Clock } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
+import Link from 'next/link';
 
 interface DashboardStats {
   totalCount: number;
@@ -106,24 +107,24 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <a
+              <Link
                 href="/admin/pledges"
                 className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
               >
                 Manage Pledges
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/admin/users"
                 className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
               >
                 Manage Users
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/"
                 className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md"
               >
                 View Public Site
-              </a>
+              </Link>
             </div>
           </CardContent>
         </Card>
