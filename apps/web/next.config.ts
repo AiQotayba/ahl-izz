@@ -1,6 +1,8 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  
+  outputFileTracingRoot: __dirname, // أو مسار root الأساسي
   images: {
     domains: ['localhost'],
     formats: ['image/webp', 'image/avif'],
