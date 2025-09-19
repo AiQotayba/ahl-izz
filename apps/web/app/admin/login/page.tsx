@@ -35,25 +35,37 @@ export default function AdminLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-            <Card className="w-full max-w-md">
+        <div 
+            className="min-h-screen islamic-pattern flex items-center justify-center p-4"
+            style={{
+                backgroundImage: 'url(/images/bg2.png)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+            }}
+            dir="rtl"
+        >
+            <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm border-donation-teal/20 shadow-2xl">
                 <CardHeader className="text-center">
-                    <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                        <Lock className="w-6 h-6 text-blue-600" />
+                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-donation-teal to-donation-darkTeal rounded-full flex items-center justify-center mb-4 shadow-lg">
+                        <Lock className="w-8 h-8 text-white" />
                     </div>
-                    <CardTitle className="text-2xl font-bold text-gray-900">
+                    <CardTitle className="text-3xl font-bold text-donation-darkTeal font-somar">
                         تسجيل دخول الإدارة
                     </CardTitle>
-                    <CardDescription>
-                        أدخل بياناتك للوصول إلى لوحة التحكم
+                    <CardDescription className="text-donation-teal font-somar text-lg">
+                        أدخل بياناتك للوصول إلى مركز التحكم الإداري
                     </CardDescription>
                 </CardHeader>
 
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         {error && (
-                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
-                                {error}
+                            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm font-somar">
+                                <div className="flex items-center gap-2">
+                                    <AlertCircle className="w-4 h-4" />
+                                    {error}
+                                </div>
                             </div>
                         )}
 

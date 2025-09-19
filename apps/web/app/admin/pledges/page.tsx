@@ -13,6 +13,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Search,
   CheckCircle,
   XCircle,
@@ -22,7 +29,9 @@ import {
   DollarSign,
   Calendar,
   User,
-  AlertCircle
+  AlertCircle,
+  PhoneCallIcon,
+
 } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -171,8 +180,8 @@ export default function PledgesManagement() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-donation-darkTeal font-somar mb-2">إدارة التبرعات</h1>
-        <p className="text-donation-teal font-somar text-lg">عرض وإدارة جميع التبرعات المقدمة</p>
+        <h1 className="text-4xl font-bold text-donation-darkTeal font-somar mb-2">مركز إدارة التبرعات</h1>
+        <p className="text-donation-teal font-somar text-lg">تتبع ومراجعة جميع التبرعات المقدمة لحملة حلب الإغاثية</p>
       </div>
 
       {/* Filters */}
@@ -180,32 +189,33 @@ export default function PledgesManagement() {
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
-            placeholder="البحث في التبرعات..."
+            placeholder="ابحث بالاسم، البريد الإلكتروني، أو رقم الهاتف..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="all">جميع الحالات</option>
-          <option value="pending">في الانتظار</option>
-          <option value="confirmed">مؤكد</option>
-          <option value="rejected">مرفوض</option>
-        </select>
+        <Select value={statusFilter} onValueChange={setStatusFilter} dir="rtl">
+          <SelectTrigger className="w-[180px] border-donation-teal/30 text-donation-darkTeal font-somar">
+            <SelectValue placeholder="فلترة حسب الحالة" />
+          </SelectTrigger>
+          <SelectContent className="bg-white/95 backdrop-blur-sm border-donation-teal/20">
+            <SelectItem value="all" className="text-donation-darkTeal font-somar">جميع التبرعات</SelectItem>
+            <SelectItem value="pending" className="text-donation-darkTeal font-somar">في انتظار المراجعة</SelectItem>
+            <SelectItem value="confirmed" className="text-donation-darkTeal font-somar">تم التأكيد</SelectItem>
+            <SelectItem value="rejected" className="text-donation-darkTeal font-somar">تم الرفض</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-donation-teal font-somar">إجمالي التبرعات</p>
+                <p className="text-sm font-medium text-donation-teal font-somar">عدد التبرعات</p>
                 <p className="text-2xl font-bold text-donation-darkTeal font-somar">
                   {pledgesResponse?.data?.pagination?.total || pledges.length}
                 </p>
@@ -219,7 +229,7 @@ export default function PledgesManagement() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-donation-teal font-somar">في الانتظار</p>
+                <p className="text-sm font-medium text-donation-teal font-somar">في انتظار المراجعة</p>
                 <p className="text-2xl font-bold text-donation-olive font-somar">
                   {pledges.filter(p => p.pledgeStatus === 'pending').length}
                 </p>
@@ -233,7 +243,7 @@ export default function PledgesManagement() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-donation-teal font-somar">مؤكد</p>
+                <p className="text-sm font-medium text-donation-teal font-somar">تم التأكيد</p>
                 <p className="text-2xl font-bold text-donation-green font-somar">
                   {pledges.filter(p => p.pledgeStatus === 'confirmed').length}
                 </p>
@@ -247,7 +257,7 @@ export default function PledgesManagement() {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-donation-teal font-somar">إجمالي المبلغ</p>
+                <p className="text-sm font-medium text-donation-teal font-somar">إجمالي المبلغ المتبرع</p>
                 <p className="text-2xl font-bold text-donation-gold font-somar">
                   ${pledges.reduce((sum, p) => sum + p.amount, 0).toLocaleString()}
                 </p>
@@ -261,9 +271,9 @@ export default function PledgesManagement() {
       {/* Pledges List */}
       <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-donation-darkTeal font-somar">قائمة التبرعات</CardTitle>
+          <CardTitle className="text-donation-darkTeal font-somar">سجل التبرعات</CardTitle>
           <CardDescription className="text-donation-teal font-somar">
-            عرض {filteredPledges.length} من أصل {pledgesResponse?.data?.pagination?.total || pledges.length} تبرع
+            عرض {filteredPledges.length} تبرع من أصل {pledgesResponse?.data?.pagination?.total || pledges.length} تبرع إجمالي
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -304,7 +314,7 @@ export default function PledgesManagement() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
@@ -314,14 +324,18 @@ export default function PledgesManagement() {
                       <Eye className="w-4 h-4 ml-1" />
                       عرض
                     </Button>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ))}
 
             {filteredPledges.length === 0 && (
               <div className="text-center py-8 text-donation-teal font-somar">
-                لا توجد تبرعات تطابق المعايير المحددة
+                <div className="mb-4">
+                  <Search className="w-12 h-12 text-donation-teal/50 mx-auto" />
+                </div>
+                <h3 className="text-lg font-medium text-donation-darkTeal mb-2">لم يتم العثور على تبرعات</h3>
+                <p className="text-donation-teal">جرب تغيير معايير البحث أو الفلترة للعثور على التبرعات المطلوبة</p>
               </div>
             )}
           </div>
@@ -333,7 +347,7 @@ export default function PledgesManagement() {
         <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-sm border-donation-teal/20">
           <DialogHeader>
             <DialogTitle className="text-donation-darkTeal font-somar text-right">
-              تفاصيل التبرع
+              تفاصيل التبرع - {selectedPledge?.fullName || 'مجهول'}
             </DialogTitle>
           </DialogHeader>
 
@@ -341,11 +355,11 @@ export default function PledgesManagement() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-sm font-medium text-donation-teal font-somar">الاسم</label>
+                  <label className="text-sm font-medium text-donation-teal font-somar">اسم المتبرع</label>
                   <p className="text-donation-darkTeal font-somar">{selectedPledge.fullName || 'غير محدد'}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-donation-teal font-somar">المبلغ</label>
+                  <label className="text-sm font-medium text-donation-teal font-somar">مبلغ التبرع</label>
                   <p className="text-donation-gold font-bold font-somar">${selectedPledge.amount.toLocaleString()}</p>
                 </div>
                 <div>
@@ -355,13 +369,17 @@ export default function PledgesManagement() {
                 <div>
                   <label className="text-sm font-medium text-donation-teal font-somar">رقم الهاتف</label>
                   <p className="text-donation-darkTeal font-somar">{selectedPledge.phoneNumber}</p>
+                  <Button variant="outline" className="w-full mt-2" onClick={() => window.open(`https://wa.me/${selectedPledge.phoneNumber.replace('+', '')}`, '_blank')}>
+                    <PhoneCallIcon className="w-4 h-4 ml-1" />
+                    التواصل عبر واتساب
+                  </Button>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-donation-teal font-somar">الحالة</label>
+                  <label className="text-sm font-medium text-donation-teal font-somar">حالة التبرع</label>
                   <div className="mt-1">{getStatusBadge(selectedPledge.pledgeStatus)}</div>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-donation-teal font-somar">تاريخ التقديم</label>
+                  <label className="text-sm font-medium text-donation-teal font-somar">تاريخ تقديم التبرع</label>
                   <p className="text-donation-darkTeal font-somar">
                     {new Date(selectedPledge.createdAt).toLocaleString('ar-SA')}
                   </p>
@@ -370,7 +388,7 @@ export default function PledgesManagement() {
 
               {selectedPledge.message && (
                 <div>
-                  <label className="text-sm font-medium text-donation-teal font-somar">الرسالة</label>
+                  <label className="text-sm font-medium text-donation-teal font-somar">رسالة المتبرع</label>
                   <p className="text-donation-darkTeal mt-1 p-3 bg-gradient-to-r from-donation-teal/5 to-donation-gold/5 rounded-lg font-somar">
                     {selectedPledge.message}
                   </p>
@@ -403,7 +421,7 @@ export default function PledgesManagement() {
                     </Button>
                   </>
                 )}
-                <Button
+                {/* <Button
                   variant="outline"
                   onClick={() => {
                     if (confirm('هل أنت متأكد من حذف البيانات الشخصية؟ هذا الإجراء لا يمكن التراجع عنه.')) {
@@ -415,7 +433,7 @@ export default function PledgesManagement() {
                 >
                   <Trash2 className="w-4 h-4 ml-1" />
                   {erasePIIMutation.isPending ? 'جاري الحذف...' : 'حذف البيانات'}
-                </Button>
+                </Button> */}
               </div>
             </div>
           )}

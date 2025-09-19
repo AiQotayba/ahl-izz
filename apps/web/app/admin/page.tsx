@@ -51,32 +51,32 @@ export default function AdminDashboard() {
   return (
     <div className='h-screen overflow-y-auto'>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-donation-darkTeal font-somar mb-2">لوحة التحكم</h1>
-        <p className="text-donation-teal font-somar text-lg">نظرة عامة على حملة حلب الإغاثية</p>
+        <h1 className="text-4xl font-bold text-donation-darkTeal font-somar mb-2">مركز التحكم الإداري</h1>
+        <p className="text-donation-teal font-somar text-lg">نظرة شاملة على تقدم حملة حلب الإغاثية وإحصائيات التبرعات</p>
       </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatsCard
-          title="إجمالي التبرعات"
+          title="عدد التبرعات"
           value={stats.totalCount.toLocaleString()}
           icon={<Users className="h-8 w-8 text-donation-teal" />}
           loading={loading}
         />
         <StatsCard
-          title="إجمالي المبلغ"
+          title="إجمالي المبلغ المتبرع"
           value={`$${stats.totalAmount.toLocaleString()}`}
           icon={<DollarSign className="h-8 w-8 text-donation-gold" />}
           loading={loading}
         />
         <StatsCard
-          title="مؤكد"
+          title="تم التأكيد"
           value={stats.statusCounts?.confirmed?.toLocaleString() || '0'}
           icon={<TrendingUp className="h-8 w-8 text-donation-green" />}
           loading={loading}
         />
         <StatsCard
-          title="في الانتظار"
+          title="في انتظار المراجعة"
           value={stats.statusCounts?.pending?.toLocaleString() || '0'}
           icon={<Clock className="h-8 w-8 text-donation-olive" />}
           loading={loading}
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle className="text-donation-darkTeal font-somar">توزيع التبرعات حسب الحالة</CardTitle>
             <CardDescription className="text-donation-teal font-somar">
-              عرض تفصيلي لحالات التبرعات
+              إحصائيات مفصلة لحالات التبرعات المختلفة
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -97,7 +97,7 @@ export default function AdminDashboard() {
               {stats.statusCounts && Object.entries(stats.statusCounts).map(([status, count]) => (
                 <div key={status} className="flex items-center justify-between p-3 bg-gradient-to-r from-donation-teal/5 to-donation-gold/5 rounded-lg">
                   <span className="capitalize text-sm font-medium text-donation-darkTeal font-somar">
-                    {status === 'pending' ? 'في الانتظار' : status === 'confirmed' ? 'مؤكد' : status === 'rejected' ? 'مرفوض' : status}
+                    {status === 'pending' ? 'في انتظار المراجعة' : status === 'confirmed' ? 'تم التأكيد' : status === 'rejected' ? 'تم الرفض' : status}
                   </span>
                   <span className="text-sm font-bold text-donation-teal font-somar">
                     {count.toLocaleString()}
@@ -106,7 +106,10 @@ export default function AdminDashboard() {
               ))}
               {(!stats.statusCounts || Object.keys(stats.statusCounts).length === 0) && (
                 <div className="text-center py-4 text-donation-teal font-somar">
-                  لا توجد بيانات متاحة
+                  <div className="mb-2">
+                    <TrendingUp className="w-8 h-8 text-donation-teal/50 mx-auto" />
+                  </div>
+                  <p>لا توجد إحصائيات متاحة حالياً</p>
                 </div>
               )}
             </div>
@@ -117,7 +120,7 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle className="text-donation-darkTeal font-somar">الإجراءات السريعة</CardTitle>
             <CardDescription className="text-donation-teal font-somar">
-              المهام الإدارية الشائعة
+              الوصول السريع للمهام الإدارية الأساسية
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -126,19 +129,19 @@ export default function AdminDashboard() {
                 href="/admin/pledges"
                 className="block w-full text-right px-4 py-3 text-sm font-medium text-donation-darkTeal hover:bg-gradient-to-r hover:from-donation-teal/10 hover:to-donation-gold/10 rounded-lg transition-all duration-200 font-somar border border-donation-teal/20"
               >
-                إدارة التبرعات
+                مراجعة وإدارة التبرعات
               </Link>
               <Link
                 href="/admin/users"
                 className="block w-full text-right px-4 py-3 text-sm font-medium text-donation-darkTeal hover:bg-gradient-to-r hover:from-donation-teal/10 hover:to-donation-gold/10 rounded-lg transition-all duration-200 font-somar border border-donation-teal/20"
               >
-                إدارة المستخدمين
+                إدارة المستخدمين والصلاحيات
               </Link>
               <Link
                 href="/"
                 className="block w-full text-right px-4 py-3 text-sm font-medium text-donation-darkTeal hover:bg-gradient-to-r hover:from-donation-teal/10 hover:to-donation-gold/10 rounded-lg transition-all duration-200 font-somar border border-donation-teal/20"
               >
-                عرض الموقع العام
+                عرض الموقع العام للمتبرعين
               </Link>
             </div>
           </CardContent>

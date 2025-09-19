@@ -94,7 +94,7 @@ export default function AdminLayout({
     >
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-64 bg-white/95 backdrop-blur-sm shadow-lg border-r border-donation-teal/20">
+        <div className="w-64 hidden lg:block bg-white/95 backdrop-blur-sm shadow-lg border-r border-donation-teal/20">
           <div className="p-6 border-b border-donation-teal/20">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 bg-gradient-to-br from-donation-teal to-donation-darkTeal rounded-xl flex items-center justify-center shadow-lg">

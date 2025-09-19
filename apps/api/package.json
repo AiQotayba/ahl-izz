@@ -14,10 +14,8 @@
         "db:seed": "tsx src/scripts/seedAdmin.ts",
         "test": "jest",
         "test:watch": "jest --watch",
-        "test:coverage": "jest --coverage",
-        "vercel-build": "npm run build",
-        "deploy": "vercel --prod",
-        "deploy-preview": "vercel"
+        "test:coverage": "jest --coverage", 
+        "deploy": "vercel --prod"
     },
     "dependencies": {
         "express": "^4.18.2",
