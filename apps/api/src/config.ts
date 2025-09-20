@@ -35,8 +35,7 @@ for (const envVar of recommendedEnvVars) {
 export const config: any = {
   NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
   PORT: parseInt(process.env.PORT || '3001', 10),
-  MONGODB_URI: process.env.MONGODB_URI!,
-  REDIS_URL: process.env.REDIS_URL,
+  MONGODB_URI: process.env.MONGODB_URI!, 
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET!,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET!,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN!,

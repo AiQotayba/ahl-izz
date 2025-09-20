@@ -113,8 +113,7 @@ Create a `.env` file in the root directory:
 
 ```env
 # Database
-MONGODB_URI=mongodb://localhost:27017/donation-hub
-REDIS_URL=redis://localhost:6379
+MONGODB_URI=mongodb://localhost:27017/donation-hub 
 
 # JWT Secrets (CHANGE THESE IN PRODUCTION!)
 JWT_ACCESS_SECRET=your-super-secret-access-key-here

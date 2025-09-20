@@ -86,6 +86,26 @@ export const submitPledge = async (
       amount: pledge.amount,
       hasContact: !!(pledge.phoneNumber)
     });
+    // Send socket notification if pledge is confirmed
+    if (pledge.pledgeStatus === 'confirmed') {
+      try {
+        const io = (req as any).app.get('io');
+        if (io) {
+          emitPledgeUpdated(io, {
+            _id: pledge._id,
+            fullName: pledge.fullName,
+            amount: pledge.amount,
+            pledgeStatus: pledge.pledgeStatus,
+            createdAt: pledge.createdAt
+          });
+          await emitStatsUpdate(io);
+          console.log(`Socket notification sent for confirmed pledge: ${pledge._id}`);
+        }
+      } catch (socketError) {
+        console.error('Failed to send socket notification:', socketError);
+        // Don't fail the request if socket fails
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -346,6 +366,26 @@ export const erasePledgePII = async (
     if (!pledge) {
       res.status(404).json({ success: false, error: 'Pledge not found' });
       return;
+    }
+    // Send socket notification if pledge is confirmed
+    if (pledge.pledgeStatus === 'confirmed') {
+      try {
+        const io = (req as any).app.get('io');
+        if (io) {
+          emitPledgeUpdated(io, {
+            _id: pledge._id,
+            fullName: pledge.fullName,
+            amount: pledge.amount,
+            pledgeStatus: pledge.pledgeStatus,
+            createdAt: pledge.createdAt
+          });
+          await emitStatsUpdate(io);
+          console.log(`Socket notification sent for confirmed pledge: ${pledge._id}`);
+        }
+      } catch (socketError) {
+        console.error('Failed to send socket notification:', socketError);
+        // Don't fail the request if socket fails
+      }
     }
 
     // Log PII erasure

@@ -9,7 +9,7 @@ class SocketService {
       return;
     }
 
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aleppo.lb-sy.com';
 
     this.socket = io(API_URL, {
       auth: {
