@@ -63,7 +63,7 @@ export default function AddPledgeForm({ isOpen, onClose }: AddPledgeFormProps) {
         defaultValues: {
             fullName: '',
             email: '',
-            phoneNumber: '',
+            phoneNumber: '+9612',
             amount: 0,
             message: '',
             pledgeStatus: 'confirmed',
