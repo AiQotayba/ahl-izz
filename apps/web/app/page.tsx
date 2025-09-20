@@ -42,6 +42,37 @@ export default function HomePage() {
   const [liveDonations, setLiveDonations] = useState<LiveDonation[]>([]);
   const [topDonations, setTopDonations] = useState<any[]>([]);
 
+  // Helper function to add new donation to both live and top donations
+  const addNewDonation = (pledge: any) => {
+    const newDonation = {
+      _id: pledge._id,
+      fullName: pledge.fullName || "فاعل خير",
+      amount: pledge.amount,
+      createdAt: pledge.createdAt
+    };
+
+    // Add to live donations
+    setLiveDonations(prev => [
+      newDonation,
+      ...prev.slice(0, 9) // Keep only latest 10
+    ]);
+
+    // Check if this donation should be added to top donations
+    setTopDonations(prev => {
+      const newTopDonations = [...prev, newDonation]
+        .sort((a, b) => b.amount - a.amount) // Sort by amount descending
+        .slice(0, 5); // Keep only top 5
+      
+      // Only update if the new donation made it to top 5
+      if (newTopDonations.some(donation => donation._id === newDonation._id)) {
+        console.log('New donation added to top donations:', newDonation);
+        return newTopDonations;
+      }
+      
+      return prev; // No change if not in top 5
+    });
+  };
+
   // Fetch initial statistics
   useEffect(() => {
     const fetchStats = async () => {
@@ -91,42 +122,25 @@ export default function HomePage() {
   // Set up socket connection for real-time updates
   useEffect(() => {
     console.log('Setting up socket connection...');
-    socketService.connect();
     
-    // Log connection status
-    const checkConnection = () => {
-      console.log('Socket connected:', socketService.connected);
-    };
-    
-    // Check connection after a short delay
-    const timeoutId = setTimeout(checkConnection, 1000);
+    // Only connect if we're in the browser
+    if (typeof window !== 'undefined') {
+      socketService.connect();
+      
+      // Log connection status
+      const checkConnection = () => {
+        console.log('Socket connected:', socketService.connected);
+        socketService.testConnection();
+        if (!socketService.connected) {
+          console.warn('Socket not connected, attempting to reconnect...');
+          socketService.reconnect();
+        }
+      };
+      
+      // Check connection after a short delay
+      const timeoutId = setTimeout(checkConnection, 2000);
 
-    // Listen for new pledges
-    const handleNewPledge = (data: any) => {
-      console.log('New pledge received:', data);
-
-      // Update stats
-      setStats(prev => ({
-        ...prev,
-        totalAmount: prev.totalAmount + (data.amount || 0),
-        totalCount: prev.totalCount + 1
-      }));
-
-      // Add to live donations
-      if (data.pledgeStatus === 'confirmed') {
-        setLiveDonations(prev => [
-          {
-            _id: data._id,
-            fullName: data.fullName ? `${data.fullName} من حلب` : 'مجهول',
-            amount: data.amount,
-            createdAt: data.createdAt
-          },
-          ...prev.slice(0, 9) // Keep only latest 10
-        ]);
-      }
-    };
-
-    // Listen for stats updates
+    // Listen for stats updates (primary source of truth)
     const handleStatsUpdate = (data: any) => {
       console.log('Stats update received:', data);
       setStats(prev => ({
@@ -136,63 +150,36 @@ export default function HomePage() {
       }));
     };
 
-    // Listen for pledge updates (when confirmed)
-    const handlePledgeUpdated = (data: any) => {
-      console.log('Pledge updated received:', data);
-      
-      // If pledge was confirmed, add to live donations
-      if (data.pledge && data.pledge.pledgeStatus === 'confirmed') {
-        setLiveDonations(prev => [
-          {
-            _id: data.pledge._id,
-            fullName: data.pledge.fullName ? `${data.pledge.fullName} من حلب` : 'مجهول',
-            amount: data.pledge.amount,
-            createdAt: data.pledge.createdAt
-          },
-          ...prev.slice(0, 9) // Keep only latest 10
-        ]);
-      }
-    };
-
-    // Listen for pledge confirmed events (from pledgeController)
+    // Listen for new confirmed pledges (for live donations)
     const handlePledgeConfirmed = (data: any) => {
       console.log('Pledge confirmed received:', data);
       
-      // Update stats with new data
-      if (data.stats) {
-        setStats(prev => ({
-          ...prev,
-          totalAmount: data.stats.totalAmount || prev.totalAmount,
-          totalCount: data.stats.totalCount || prev.totalCount
-        }));
-      }
-      
-      // Add to live donations
       if (data.pledge) {
-        setLiveDonations(prev => [
-          {
-            _id: data.pledge._id,
-            fullName: data.pledge.fullName ? `${data.pledge.fullName} من حلب` : 'مجهول',
-            amount: data.pledge.amount,
-            createdAt: data.pledge.createdAt
-          },
-          ...prev.slice(0, 9) // Keep only latest 10
-        ]);
+        addNewDonation(data.pledge);
       }
     };
 
-    socketService.on('new-pledge', handleNewPledge);
-    socketService.on('stats-update', handleStatsUpdate);
-    socketService.on('pledge-updated', handlePledgeUpdated);
-    socketService.on('pledge_confirmed', handlePledgeConfirmed);
-
-    return () => {
-      clearTimeout(timeoutId);
-      socketService.off('new-pledge', handleNewPledge);
-      socketService.off('stats-update', handleStatsUpdate);
-      socketService.off('pledge-updated', handlePledgeUpdated);
-      socketService.off('pledge_confirmed', handlePledgeConfirmed);
+    // Listen for new pledges (for immediate feedback)
+    const handleNewPledge = (data: any) => {
+      console.log('New pledge received:', data);
+      
+      // Only add to live donations if already confirmed
+      if (data.pledge && data.pledge.pledgeStatus === 'confirmed') {
+        addNewDonation(data.pledge);
+      }
     };
+
+    socketService.on('stats-update', handleStatsUpdate);
+    socketService.on('pledge-confirmed', handlePledgeConfirmed);
+    socketService.on('new-pledge', handleNewPledge);
+
+      return () => {
+        clearTimeout(timeoutId);
+        socketService.off('stats-update', handleStatsUpdate);
+        socketService.off('pledge-confirmed', handlePledgeConfirmed);
+        socketService.off('new-pledge', handleNewPledge);
+      };
+    }
   }, []);
 
   // Show error state if there's an error and no data

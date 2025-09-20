@@ -15,7 +15,8 @@ export const setupSocketIO = (server: HTTPServer): SocketIOServer => {
       methods: ['GET', 'POST'],
       credentials: true
     },
-    transports: ['websocket', 'polling']
+    transports: ['websocket', 'polling'],
+    allowEIO3: true
   });
 
   // Authentication middleware for Socket.IO
@@ -130,7 +131,21 @@ export const emitStatsUpdate = async (io: SocketIOServer) => {
 export const emitPledgeUpdated = (io: SocketIOServer, pledge: any) => {
   const event: any = { pledge };
   
+  // Send to admin room for admin notifications
   io.to('admin').emit('pledge-updated', event);
+  
+  // Send to public room for live donations if pledge is confirmed
+  if (pledge.pledgeStatus === 'confirmed') {
+    const publicEvent: any = { 
+      pledge: {
+        _id: pledge._id,
+        fullName: pledge.fullName,
+        amount: pledge.amount,
+        createdAt: pledge.createdAt
+      }
+    };
+    io.to('public').emit('pledge-confirmed', publicEvent);
+  }
   
   logSecurityEvent('socket_broadcast', undefined, 'system', {
     event: 'pledge-updated',

@@ -89,7 +89,7 @@ export const submitPledge = async (
     // Send socket notification if pledge is confirmed
     if (pledge.pledgeStatus === 'confirmed') {
       try {
-        const io = (req as any).app.get('io');
+        const io = global.io;
         if (io) {
           emitPledgeUpdated(io, {
             _id: pledge._id,
@@ -292,7 +292,7 @@ export const updatePledge = async (
     if (pledge.pledgeStatus === 'confirmed') {
       try {
         // Get the io instance from the request
-        const io = (req as any).app.get('io');
+        const io = global.io;
         
         if (io) {
           // Emit pledge updated event to admin room
@@ -370,7 +370,7 @@ export const erasePledgePII = async (
     // Send socket notification if pledge is confirmed
     if (pledge.pledgeStatus === 'confirmed') {
       try {
-        const io = (req as any).app.get('io');
+        const io = global.io;
         if (io) {
           emitPledgeUpdated(io, {
             _id: pledge._id,
