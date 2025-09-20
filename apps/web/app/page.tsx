@@ -239,7 +239,7 @@ export default function HomePage() {
       <div className="flex flex-col lg:flex-row items-center justify-center mx-2 sm:mx-5 lg:mx-10 w-full gap-6 lg:gap-0">
         <div className="max-w-7xl mx-auto w-full">
           {/* Logo Section */}
-          <div className="flex justify-center items-center md:justify-start mb-4 sm:mb-6 lg:mb-8 flex-col">
+          <div className="flex justify-center items-center lg:items-start md:justify-start mb-4 sm:mb-6 lg:mb-8 flex-col">
             <Logo />
             <p className='text-sm text-white font-somar font-bold mt-4 lg:hidden'>هذا الصفحة   متاحة فقط على اجهزة الحاسوب</p>
             <p className='text-sm text-white font-somar font-bold mt-4 lg:hidden'>
@@ -248,7 +248,7 @@ export default function HomePage() {
 
           {/* اعلى التبرعات */}
           <div className="mb-4 sm:mb-6 lg:mb-8 hidden lg:block">
-            <TopDonations donations={topDonations} />
+            <TopDonations donations={topDonations} isLoading={stats.loading} />
           </div>
 
           {/* صف (اجمالي التبرعات و عدد المتبرعين) */}

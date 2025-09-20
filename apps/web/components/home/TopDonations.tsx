@@ -17,7 +17,8 @@ export function TopDonations({ donations, isLoading }: TopDonationsProps) {
 
   if (isLoading) {
     return (
-      <div className="w-full overflow-hidden max-w-[797px]">
+      <div className="w-full shadow-lg overflow-hidden max-w-[900px]">
+        {/* Header */}
         <div className="bg-donation-teal max-w-[250px] pb-8 -mb-4 rounded-t-lg px-6 py-4">
           <div className="flex items-center gap-3">
             <Star className="w-6 h-6 text-donation-yellow fill-current" />
@@ -26,12 +27,16 @@ export function TopDonations({ donations, isLoading }: TopDonationsProps) {
             </h2>
           </div>
         </div>
+
+        {/* Cards Container */}
         <div className="p-6 bg-white rounded-2xl">
           <div className="gap-4 overflow-x-auto grid lg:grid-cols-5">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="flex-shrink-0">
                 <div className="rounded-lg overflow-hidden gap-2">
-                  <div className="bg-gray-200 w-[137px] h-[42px] rounded-t-md animate-pulse"></div>
+                  {/* Amount Section Skeleton */}
+                  <div className="bg-gray-200 h-[42px] rounded-t-md animate-pulse"></div>
+                  {/* Company Section Skeleton */}
                   <div className="bg-gray-200 p-4 py-3 h-[60px] animate-pulse"></div>
                 </div>
               </div>

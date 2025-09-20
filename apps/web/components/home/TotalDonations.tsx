@@ -50,15 +50,22 @@ export function TotalDonations({ totalAmount = 1000000, isLoading = false }: Tot
 
   if (isLoading) {
     return (
-      <div className="w-[544px] h-[219px] bg-white rounded-[17px] shadow-lg overflow-hidden">
-        <div className="bg-white px-6 py-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
-            <div className="w-32 h-6 bg-gray-200 rounded animate-pulse"></div>
+      <div className="w-[544px] h-[219px] bg-white rounded-[17px] shadow-lg overflow-hidden p-5">
+        {/* Header Section */}
+        <div className="py-4">
+          <div className="flex items-center justify-start gap-3">
+            {/* Icon Skeleton */}
+            <div className="w-[54px] h-[53px] rounded-[10px] bg-gray-200 animate-pulse"></div>
+            {/* Title Skeleton */}
+            <div className="h-[55px] flex items-center">
+              <div className="w-48 h-8 bg-gray-200 rounded animate-pulse"></div>
+            </div>
           </div>
         </div>
-        <div className="bg-donation-olive px-6 py-8 text-center">
-          <div className="w-40 h-8 bg-gray-200 rounded animate-pulse mx-auto"></div>
+
+        {/* Amount Section */}
+        <div className="w-full h-[83px] rounded-lg border-[1px] border-white bg-[#BBAC15] flex items-center justify-center">
+          <div className="w-40 h-8 bg-gray-200 rounded animate-pulse"></div>
         </div>
       </div>
     );
@@ -100,11 +107,7 @@ export function TotalDonations({ totalAmount = 1000000, isLoading = false }: Tot
           ${displayAmount.toLocaleString()}
 
           {/* Digital counter effect */}
-          {isAnimating && (
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-green-400/20 to-transparent animate-pulse"></div>
-            </div>
-          )}
+
         </div>
 
       </div>

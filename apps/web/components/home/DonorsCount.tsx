@@ -18,10 +18,15 @@ export function DonorsCount({ count = 2000, isLoading = false }: DonorsCountProp
 
   if (isLoading) {
     return (
-      <div className="bg-donation-teal rounded-2xl px-6 py-6 shadow-lg">
+      <div className="">
         <div className="text-white text-center">
-          <div className="w-32 h-6 bg-gray-200 rounded animate-pulse mx-auto mb-4"></div>
-          <div className="w-24 h-24 bg-gray-200 rounded animate-pulse mx-auto"></div>
+          {/* Title Skeleton */}
+          <div className="rounded-2xl shadow-lg bg-[#004B4B] p-4 w-full mb-4">
+            <div className="w-48 h-6 bg-gray-200 rounded animate-pulse mx-auto"></div>
+          </div>
+
+          {/* QR Code Skeleton */}
+          <div className="w-32 h-32 bg-gray-200 rounded-lg mx-auto animate-pulse"></div>
         </div>
       </div>
     );
