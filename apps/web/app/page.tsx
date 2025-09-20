@@ -58,15 +58,41 @@ export default function HomePage() {
   const [topDonations, setTopDonations] = useState<any[]>([]);
   const [newDonationAnimation, setNewDonationAnimation] = useState<string | null>(null);
   const [counterAnimation, setCounterAnimation] = useState<boolean>(false);
+  const [notification, setNotification] = useState<{
+    show: boolean;
+    message: string;
+    donorName: string;
+    amount: number;
+  }>({
+    show: false,
+    message: '',
+    donorName: '',
+    amount: 0
+  });
 
   // Helper function to add new donation to both live and top donations
   const addNewDonation = (pledge: any) => {
+
     const newDonation = {
       _id: pledge._id,
       fullName: pledge.fullName || "فاعل خير",
       amount: pledge.amount,
+      message: pledge.message,
       createdAt: pledge.createdAt
     };
+
+    // Show notification for 5 seconds
+    setNotification({
+      show: true,
+      message: pledge.message,
+      donorName: pledge.fullName || "فاعل خير",
+      amount: pledge.amount
+    });
+
+    // Hide notification after 5 seconds
+    setTimeout(() => {
+      setNotification(prev => ({ ...prev, show: false }));
+    }, 5000);
 
     // Trigger counter animation
     setCounterAnimation(true);
@@ -211,7 +237,7 @@ export default function HomePage() {
       };
     }
   }, []);
-
+  console.log(notification);
   // Show error state if there's an error and no data
   if (stats.error && stats.totalAmount === 0 && stats.totalCount === 0) {
     return (
@@ -259,7 +285,55 @@ export default function HomePage() {
         <div className="max-w-7xl ">
           {/* Logo Section */}
           <div className="flex justify-center items-center lg:items-start md:justify-start mb-4 sm:mb-6 lg:mb-8 flex-col">
-            <Logo />
+            <div className='flex justify-between items-center w-full'>
+              <Logo />
+              <div className="flex items-center gap-2">
+                {/* Notification for new donations */}
+                {notification.show && (
+                  <>
+                    {/* Top-right notification */}
+                    <div
+                      style={{
+                        backgroundColor: '#ffffff',
+                        borderRadius: '12px',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                        border: '2px solid #10b981',
+                        padding: '10px',
+                        maxWidth: '350px',
+                        minWidth: '300px',
+                        transform: 'translateX(0)',
+                        opacity: 1,
+                        animation: 'slideInFromRight 0.6s ease-out',
+                        fontFamily: 'Somar, sans-serif'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <div style={{
+                          width: '12px',
+                          height: '12px',
+                          backgroundColor: '#10b981',
+                          borderRadius: '50%',
+                          animation: 'pulse 2s infinite'
+                        }}></div>
+                        <div style={{ flex: 1 }} className='flex flex-row justify-between items-center'>
+
+                          <div style={{ color: '#374151', fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>
+                            {notification.donorName}
+                          </div>
+                          <div className='text-[#10b981] font-somar font-bold text-xl mb-4' >
+                            ${notification.amount.toLocaleString()}
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Center notification for testing */}
+
+                  </>
+                )}
+              </div>
+            </div>
             <p className='text-sm text-white font-somar font-bold mt-4 lg:hidden'>هذا الصفحة   متاحة فقط على اجهزة الحاسوب</p>
             <p className='text-sm text-white font-somar font-bold mt-4 lg:hidden'>
               <Link href='/donate' className='text-donation-teal px-3 py-2 bg-white rounded-lg'>العودة لصفحة التبرع </Link></p>

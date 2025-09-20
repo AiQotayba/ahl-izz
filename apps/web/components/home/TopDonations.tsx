@@ -67,7 +67,7 @@ export function TopDonations({ donations, isLoading }: TopDonationsProps) {
               <div className="rounded-lg overflow-hidden gap-2">
                 {/* Amount Section */}
                 <div className="bg-donation-gold h-[42px] justify-center items-center flex rounded-t-md text-center" title={donation.amount.toLocaleString()}>
-                  <div className="text-white font-somar font-bold text-sm w-full h-full leading-none tracking-tight text-center flex items-center justify-center">
+                  <div className="text-white font-somar font-bold text-xl w-full h-full leading-none tracking-tight text-center flex items-center justify-center">
                     ${donation.amount.toLocaleString()}
                   </div>
                 </div>
