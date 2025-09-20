@@ -224,7 +224,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="flex flex-col lg:flex-row items-center justify-center min-h-screen overflow-hidden p-3 sm:p-6 relative  m-4"
+      className="flex flex-col lg:flex-row items-center justify-center min-h-screen overflow-hidden p-3 sm:p-6 relative"
       style={{
         backgroundImage: 'url(/images/bg2.png)',
         backgroundSize: 'cover',
