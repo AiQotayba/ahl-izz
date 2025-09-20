@@ -41,6 +41,8 @@ export default function HomePage() {
 
   const [liveDonations, setLiveDonations] = useState<LiveDonation[]>([]);
   const [topDonations, setTopDonations] = useState<any[]>([]);
+  const [newDonationAnimation, setNewDonationAnimation] = useState<string | null>(null);
+  const [counterAnimation, setCounterAnimation] = useState<boolean>(false);
 
   // Helper function to add new donation to both live and top donations
   const addNewDonation = (pledge: any) => {
@@ -50,6 +52,14 @@ export default function HomePage() {
       amount: pledge.amount,
       createdAt: pledge.createdAt
     };
+
+    // Trigger counter animation
+    setCounterAnimation(true);
+    setTimeout(() => setCounterAnimation(false), 2000);
+
+    // Trigger new donation animation
+    setNewDonationAnimation(newDonation._id);
+    setTimeout(() => setNewDonationAnimation(null), 3000);
 
     // Add to live donations
     setLiveDonations(prev => [
@@ -62,13 +72,13 @@ export default function HomePage() {
       const newTopDonations = [...prev, newDonation]
         .sort((a, b) => b.amount - a.amount) // Sort by amount descending
         .slice(0, 5); // Keep only top 5
-      
+
       // Only update if the new donation made it to top 5
       if (newTopDonations.some(donation => donation._id === newDonation._id)) {
         console.log('New donation added to top donations:', newDonation);
         return newTopDonations;
       }
-      
+
       return prev; // No change if not in top 5
     });
   };
@@ -122,11 +132,11 @@ export default function HomePage() {
   // Set up socket connection for real-time updates
   useEffect(() => {
     console.log('Setting up socket connection...');
-    
+
     // Only connect if we're in the browser
     if (typeof window !== 'undefined') {
       socketService.connect();
-      
+
       // Log connection status
       const checkConnection = () => {
         console.log('Socket connected:', socketService.connected);
@@ -136,42 +146,47 @@ export default function HomePage() {
           socketService.reconnect();
         }
       };
-      
+
       // Check connection after a short delay
       const timeoutId = setTimeout(checkConnection, 2000);
 
-    // Listen for stats updates (primary source of truth)
-    const handleStatsUpdate = (data: any) => {
-      console.log('Stats update received:', data);
-      setStats(prev => ({
-        ...prev,
-        totalAmount: data.totalAmount || prev.totalAmount,
-        totalCount: data.totalCount || prev.totalCount
-      }));
-    };
+      // Listen for stats updates (primary source of truth)
+      const handleStatsUpdate = (data: any) => {
+        console.log('Stats update received:', data);
 
-    // Listen for new confirmed pledges (for live donations)
-    const handlePledgeConfirmed = (data: any) => {
-      console.log('Pledge confirmed received:', data);
-      
-      if (data.pledge) {
-        addNewDonation(data.pledge);
-      }
-    };
+        // Trigger counter animation for stats
+        setCounterAnimation(true);
+        setTimeout(() => setCounterAnimation(false), 1500);
 
-    // Listen for new pledges (for immediate feedback)
-    const handleNewPledge = (data: any) => {
-      console.log('New pledge received:', data);
-      
-      // Only add to live donations if already confirmed
-      if (data.pledge && data.pledge.pledgeStatus === 'confirmed') {
-        addNewDonation(data.pledge);
-      }
-    };
+        setStats(prev => ({
+          ...prev,
+          totalAmount: data.totalAmount || prev.totalAmount,
+          totalCount: data.totalCount || prev.totalCount
+        }));
+      };
 
-    socketService.on('stats-update', handleStatsUpdate);
-    socketService.on('pledge-confirmed', handlePledgeConfirmed);
-    socketService.on('new-pledge', handleNewPledge);
+      // Listen for new confirmed pledges (for live donations)
+      const handlePledgeConfirmed = (data: any) => {
+        console.log('Pledge confirmed received:', data);
+
+        if (data.pledge) {
+          addNewDonation(data.pledge);
+        }
+      };
+
+      // Listen for new pledges (for immediate feedback)
+      const handleNewPledge = (data: any) => {
+        console.log('New pledge received:', data);
+
+        // Only add to live donations if already confirmed
+        if (data.pledge && data.pledge.pledgeStatus === 'confirmed') {
+          addNewDonation(data.pledge);
+        }
+      };
+
+      socketService.on('stats-update', handleStatsUpdate);
+      socketService.on('pledge-confirmed', handlePledgeConfirmed);
+      socketService.on('new-pledge', handleNewPledge);
 
       return () => {
         clearTimeout(timeoutId);
@@ -235,10 +250,14 @@ export default function HomePage() {
           {/* صف (اجمالي التبرعات و عدد المتبرعين) */}
           <div className=" flex-col sm:flex-row justify-between gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6 lg:mb-8 max-w-[900px] hidden sm:flex">
             <div className="flex justify-center w-full sm:w-auto">
-              <TotalDonations totalAmount={stats.totalAmount} isLoading={stats.loading} />
+              <div className={counterAnimation ? 'animate-glow' : ''}>
+                <TotalDonations totalAmount={stats.totalAmount} isLoading={stats.loading} />
+              </div>
             </div>
             <div className="flex justify-center w-full sm:w-auto">
-              <DonorsCount count={stats.totalCount} isLoading={stats.loading} />
+              <div className={counterAnimation ? 'animate-glow' : ''}>
+                <DonorsCount count={stats.totalCount} isLoading={stats.loading} />
+              </div>
             </div>
           </div>
 
@@ -247,7 +266,9 @@ export default function HomePage() {
         {/* التبرعات المباشرة */}
         <div className="max-w-7xl mx-auto px-3 sm:px-6 items-center w-full lg:w-auto hidden sm:flex">
           <div className="flex justify-center w-full">
-            <LiveDonations donations={liveDonations} isLoading={stats.loading} />
+            <div className={newDonationAnimation ? 'animate-glow' : ''}>
+              <LiveDonations donations={liveDonations} isLoading={stats.loading} />
+            </div>
           </div>
         </div>
       </div>

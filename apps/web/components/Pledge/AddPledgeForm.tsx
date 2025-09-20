@@ -268,6 +268,14 @@ export default function AddPledgeForm({ isOpen, onClose }: AddPledgeFormProps) {
                     {/* Submit Buttons */}
                     <div className="flex gap-3 pt-4">
                         <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleClose}
+                            className="border-donation-teal/30 text-donation-teal hover:bg-donation-teal/10 font-somar"
+                        >
+                            إلغاء
+                        </Button>
+                        <Button
                             type="submit"
                             disabled={addPledgeMutation.isPending}
                             className="flex-1 bg-gradient-to-r from-donation-teal to-donation-green hover:from-donation-teal/90 hover:to-donation-green/90 text-white font-somar"
@@ -283,14 +291,6 @@ export default function AddPledgeForm({ isOpen, onClose }: AddPledgeFormProps) {
                                     إضافة التبرع
                                 </>
                             )}
-                        </Button>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleClose}
-                            className="border-donation-teal/30 text-donation-teal hover:bg-donation-teal/10 font-somar"
-                        >
-                            إلغاء
                         </Button>
                     </div>
                 </form>

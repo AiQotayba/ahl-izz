@@ -37,7 +37,7 @@ export default function PledgeList({
                     عرض {filteredPledges.length} تبرع من أصل {totalCount || pledges.length} تبرع إجمالي
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className='p-2 md:p-4'>
                 <div className="space-y-4">
                     {filteredPledges.map((pledge) => (
                         <PledgeCard

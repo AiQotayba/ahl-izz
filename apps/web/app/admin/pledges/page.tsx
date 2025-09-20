@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, AlertCircle, LucideArrowUp, LucideArrowDown } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
@@ -35,6 +35,24 @@ export default function PledgesManagement() {
   const [isAddPledgeOpen, setIsAddPledgeOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'list' | 'table'>('table');
   const [smallScreen, setSmallScreen] = useState(false);
+
+  // Auto-detect mobile and set view mode
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if mobile on mount and resize
+  useEffect(() => {
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 768;
+      setIsMobile(mobile);
+      if (mobile) {
+        setViewMode('list');
+      }
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Fetch pledges data
   const { data: pledgesResponse, isLoading, error, refetch } = useQuery({
@@ -95,13 +113,13 @@ export default function PledgesManagement() {
   }
 
   return (
-    <div className='p-4 space-y-4'>
+    <div className='md:p-2 p-3 space-y-4'>
       {/* Header */}
-      <div className={`${smallScreen ? 'hidden' : ''}`}>
+      <div className={`${smallScreen ? 'hidden' : ''} overflow-x-auto scrollbar-hide w-screen md:w-full px-4 sm:mx-0  `}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-donation-darkTeal font-somar mb-2">مركز إدارة التبرعات</h1>
-            <p className="text-donation-teal font-somar text-lg">تتبع ومراجعة جميع التبرعات المقدمة لحملة حلب الإغاثية</p>
+            <h1 className="text-2xl sm:text-4xl font-bold text-donation-darkTeal font-somar mb-2">مركز إدارة التبرعات</h1>
+            <p className="text-donation-teal font-somar text-sm sm:text-lg">تتبع ومراجعة جميع التبرعات المقدمة لحملة  أهل العز لايُنسون</p>
           </div>
           {/* Counter */}
           <PledgeCounter
@@ -114,39 +132,64 @@ export default function PledgesManagement() {
 
       {/* Filters and View Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 !mt-0 ">
-        <PledgeFilters
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          statusFilter={statusFilter}
-          onStatusFilterChange={setStatusFilter}
-        />
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="w-full sm:w-auto">
+          <PledgeFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            statusFilter={statusFilter}
+            onStatusFilterChange={setStatusFilter}
+          />
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 w-full sm:w-auto">
 
           <Button
             onClick={() => setIsAddPledgeOpen(true)}
-            className="bg-gradient-to-r from-donation-teal to-donation-green hover:from-donation-teal/90 hover:to-donation-green/90 text-white font-somar"
+            className="bg-gradient-to-r from-donation-teal to-donation-green hover:from-donation-teal/90 hover:to-donation-green/90 text-white font-somar w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 ml-2" />
             إضافة تبرع جديد
           </Button>
-          <ViewToggle
-            currentView={viewMode}
-            onViewChange={setViewMode}
-          />
-          <Button variant={"outline"} onClick={() => setSmallScreen(!smallScreen)}>
+          
+          {/* Hide ViewToggle on mobile */}
+          {!isMobile && (
+            <ViewToggle
+              currentView={viewMode}
+              onViewChange={setViewMode}
+            />
+          )}
+          
+          <Button 
+            variant={"outline"} 
+            onClick={() => setSmallScreen(!smallScreen)}
+            className="w-full sm:w-auto"
+          >
             {smallScreen ? <LucideArrowDown className="w-4 h-4" /> : <LucideArrowUp className="w-4 h-4" />}
           </Button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className={`${smallScreen ? 'hidden' : ''}`}>
-        <PledgeStats
-          pledges={pledges}
-          totalCount={pledgesResponse?.data?.pagination?.total}
-          onStatusFilter={setStatusFilter}
-          onPaymentMethodFilter={setPaymentMethodFilter}
-        />
+      <div className={`${smallScreen ? 'hidden' : ''} overflow-x-auto scrollbar-hide w-screen md:w-full px-4 sm:mx-0  `}>
+        {/* Mobile horizontal scroll for stats */}
+        {isMobile ? (
+          <div className="overflow-x-auto  scroll-none overflow-y-hidden scrollbar-none  ">
+            <div className="min-w-max">
+              <PledgeStats
+                pledges={pledges}
+                totalCount={pledgesResponse?.data?.pagination?.total}
+                onStatusFilter={setStatusFilter}
+                onPaymentMethodFilter={setPaymentMethodFilter}
+              />
+            </div>
+          </div>
+        ) : (
+          <PledgeStats
+            pledges={pledges}
+            totalCount={pledgesResponse?.data?.pagination?.total}
+            onStatusFilter={setStatusFilter}
+            onPaymentMethodFilter={setPaymentMethodFilter}
+          />
+        )}
       </div>
 
       {/* Pledges Display */}

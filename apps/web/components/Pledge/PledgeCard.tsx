@@ -47,21 +47,25 @@ export default function PledgeCard({ pledge, onSelect }: PledgeCardProps) {
         >
             <div className="flex items-center justify-between">
                 <div className="flex-1">
-                    <div className="flex items-center gap-4 mb-2">
+                    <div className="flex items-center gap-4 mb-2 justify-between">
                         <h3 className="font-medium text-donation-darkTeal font-somar">
                             {pledge.fullName || 'مجهول'}
                         </h3>
-                        {getStatusBadge(pledge.pledgeStatus)}
                         <span className="text-lg font-bold text-donation-gold font-somar">
                             ${pledge.amount.toLocaleString()}
                         </span>
+
                     </div>
 
-                    <div className="flex items-center gap-6 text-sm text-donation-teal font-somar">
+                    <div className="flex items-center gap-6 text-sm text-donation-teal font-somar justify-between">
                         <div className="flex items-center gap-1">
                             <User className="w-4 h-4" />
                             {pledge.email}
                         </div>
+                    </div>
+                    <div className="flex items-center gap-6 text-sm text-donation-teal font-somar justify-between">
+
+                        {getStatusBadge(pledge.pledgeStatus)}
                         <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             {new Date(pledge.createdAt).toLocaleDateString('ar-SA')}
