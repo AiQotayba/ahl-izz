@@ -9,12 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { PhoneInputField } from '@/components/ui/phone-input';
-import { Heart, ArrowLeft, CheckCircle, ArrowRight, Mail, User } from 'lucide-react';
+import { Heart, ArrowLeft, CheckCircle, ArrowRight, Mail, User, Phone, QrCode, Building2, MessageCircle, CreditCard, Smartphone, ClipboardCopy } from 'lucide-react';
 import Link from 'next/link';
 import { pledgeAPI } from '@/lib/api';
 import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/utils';
-// import Image from 'next/image'; // Temporarily disabled for Vercel compatibility
+import Image from 'next/image';
 
 export interface IPledge {
   _id?: string;
@@ -23,20 +23,13 @@ export interface IPledge {
   email?: string;
   amount: number;
   message?: string;
-
-  // وسيلة الدفع (cash, online...)
   paymentMethod: 'received' | 'pledged';
-
-  // حالة التعهد
   pledgeStatus: 'received' | 'pending' | 'confirmed' | 'rejected';
-
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-
 const pledgeSchema = z.object({
-
   fullName: z.string().min(2, 'الاسم يجب أن يكون حرفين على الأقل').max(100, 'الاسم لا يمكن أن يتجاوز 100 حرف').optional().or(z.literal('')),
   phoneNumber: z.string().min(1, 'يرجى إدخال رقم الهاتف').optional().or(z.literal('')),
   email: z.string().email('يرجى إدخال بريد إلكتروني صحيح').optional().or(z.literal('')),
@@ -50,6 +43,7 @@ export default function PledgeFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'now' | 'last'>('now');
 
   const {
     register,
@@ -74,7 +68,6 @@ export default function PledgeFormPage() {
     setError(null);
 
     try {
-      // Clean up empty strings
       const cleanedData = {
         ...data,
         fullName: data.fullName || undefined,
@@ -95,7 +88,6 @@ export default function PledgeFormPage() {
     } catch (err: any) {
       console.error('Pledge submission error:', err);
 
-      // Handle different types of errors
       if (err.message) {
         setError(err.message);
       } else if (err.response?.data?.error) {
@@ -123,7 +115,6 @@ export default function PledgeFormPage() {
         dir="rtl"
       >
         <div className="max-w-2xl mx-auto text-center">
-          {/* Logo Section */}
           <div className="flex justify-center mb-8">
             <Logo />
           </div>
@@ -155,7 +146,7 @@ export default function PledgeFormPage() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center min-h-screen overflow-hidden p-4 sm:p-6 relative m-auto"
+      className="flex flex-col gap-4 items-center justify-center min-h-screen overflow-hidden p-4 sm:p-6 relative m-auto"
       style={{
         backgroundImage: 'url(/images/bg2.png)',
         backgroundSize: 'cover',
@@ -169,43 +160,130 @@ export default function PledgeFormPage() {
         <div className="flex justify-center mb-8">
           <Logo />
         </div>
-        <div className="  bg-white rounded-[17px] shadow-lg overflow-hidden p-5 justify-center items-center">
-          {/* Header Section */}
-          <div className=" px-6 py-4">
-            <div className="flex items-center justify-center gap-3">
-              {/* Icon */}
-              <div className="w-[54px] h-[53px] rounded-[10px] border-[1px] p-1 bg-[#056D5E] flex items-center justify-center">
-                <img src="/images/mdi_donation.png" alt="Hand" width={30} height={30} />
-              </div>
 
-              {/* Title */}
-              <h2 className={cn("h-[55px] font-somar font-bold text-4xl leading-none tracking-tight text-right",
-                " flex items-center text-[#056D5E]")}>
-                أهل العز لايُنسون
-              </h2>
+        {/* Campaign Header */}
+        <div className="bg-white rounded-lg shadow-md p-6 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-[#056D5E] rounded-lg flex items-center justify-center">
+              <img src="/images/mdi_donation.png" alt="Hand" width={24} height={24} />
             </div>
-            <p className="text-xl text-gray-700 font-medium leading-relaxed w-full text-center pt-4">
-              ساهم في دعم التعليم والصحة ومياه الشرب في ريف حلب الجنوبي
-            </p>
+            <h1 className="font-somar font-bold text-3xl text-[#056D5E]">
+              أهل العز لا ينسون
+            </h1>
+          </div>
+          <p className="text-gray-600">
+            طرق التبرع للحملة - من داخل وخارج سورية
+          </p>
+        </div>
+      </div>
+
+
+      {/* Donation Form */}
+      <Card className="w-full max-w-4xl mx-auto bg-white shadow-lg rounded-lg">
+        <CardHeader className="pb-4 px-6">
+          <CardTitle className="text-xl font-bold text-[#1E7B6B] text-center">معلومات التبرع</CardTitle>
+        </CardHeader>
+        <CardContent className="px-4 sm:px-6 lg:px-8">
+          {/* Tabs Navigation */}
+          <div className="flex justify-center mb-6">
+            <div className="bg-gray-100 p-1 rounded-lg flex">
+              <button
+                onClick={() => setActiveTab('now')}
+                className={cn(
+                  "px-6 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2",
+                  activeTab === 'now'
+                    ? "bg-white text-[#1E7B6B] shadow-sm"
+                    : "text-gray-600 hover:text-[#1E7B6B]"
+                )}
+              >
+                <CreditCard className="h-4 w-4" />
+                تبرع الآن
+              </button>
+              <button
+                onClick={() => setActiveTab('last')}
+                className={cn(
+                  "px-6 py-2 rounded-md font-medium transition-all duration-200 flex items-center gap-2",
+                  activeTab === 'last'
+                    ? "bg-white text-[#1E7B6B] shadow-sm"
+                    : "text-gray-600 hover:text-[#1E7B6B]"
+                )}
+              >
+                <Smartphone className="h-4 w-4" />
+                تعهد بتبرع
+              </button>
+            </div>
           </div>
 
-        </div>
-        {/* Header */}
-        <div className="text-center mb-8 *:font-somar">
-        </div>
+          {/* Payment Tab Content */}
+          {activeTab === 'now' && (
+            <div className="mb-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
-        <Card className="w-full max-w-4xl mx-auto bg-white backdrop-blur-sm border-0 shadow-2xl ring-1 ring-black/5">
-          <CardHeader className="pb-6 px-4 sm:px-6 lg:px-8">
-            <CardTitle className="text-2xl sm:text-3xl font-bold text-[#1E7B6B] text-center mb-2">معلومات التبرع</CardTitle>
-            <CardDescription className="text-center text-gray-700 text-base sm:text-lg leading-relaxed">
-              املأ النموذج أدناه لتقديم تبرعك لدعم ريف حلب الجنوبي. جميع المعلومات آمنة وستستخدم فقط لأغراض الحملة.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="px-4 sm:px-6 lg:px-8">
+                {/* QR Code */}
+                <Card className="bg-green-50 border-green-200">
+                  <CardHeader className="text-center pb-3">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                        <Image src="/images/shamcash.jpg" alt="QR Code" width={32} height={32} className="rounded" />
+                      </div>
+                      <h2 className="text-green-700 text-lg font-bold">شام كاش</h2>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <div className="bg-white p-3 rounded-lg border border-green-200">
+                      <div className="w-32 h-32 mx-auto mb-3 flex items-center justify-center bg-gray-50 rounded-lg py-2 my-4">
+                        <Image src="/images/qr.jpg" alt="QR Code" width={128} height={128} className="rounded py-2" />
+                      </div>
+                      <Button
+                        variant="outline"
+                        className="text-xs text-gray-600 font-mono w-full border-green-300 hover:bg-green-50 mt-4"
+                        onClick={() => {
+                          navigator.clipboard.writeText('862dcf8772d6923f033412b59ab6fac3');
+                          alert('تم نسخ الكود بنجاح!');
+                        }}
+                        title='انسخ الرمز'
+                      >
+                        <ClipboardCopy className="w-3 h-3 ml-1" />
+                        862dcf8772d6923f033412b59ab6fac3
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+                {/* OKAN Company Information */}
+                <Card className="bg-orange-50 border-orange-200">
+                  <CardHeader className="text-center pb-3">
+                    <div className="flex items-center justify-center gap-2 mb-3">
+                      <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                        <Image src="/images/okan.jpg" alt="OKAN" width={32} height={32} className="rounded" />
+                      </div>
+                      <h2 className="text-orange-700 text-lg font-bold">شركة أوكان</h2>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="bg-orange-100 p-4 rounded-lg text-center">
+                      <div className="mb-3">
+                        <h3 className="text-sm font-bold text-orange-800 mb-1">أهل العز لا ينسون</h3>
+                        <p className="text-orange-700 text-xs">ريف حلب الجنوبي</p>
+                      </div>
+                      <div className="bg-white rounded-lg p-3 mb-3">
+                        <div className="text-3xl font-bold text-orange-800 mb-1">1100</div>
+                        <p className="text-xs text-orange-600">رقم الحساب</p>
+                      </div>
+                      <p className="text-xs text-orange-600">إعتماد من أي برنامج على أوكان مباشر</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+            </div>
+          )}
+
+          {/* Contact Tab Content */}
+          {activeTab === 'last' && (
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              {/* Name and Amount Row - Desktop */}
+              {/* Name and Amount Row */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-                {/* Donor Name */}
                 <Input
                   id="fullName"
                   label="اسم المتبرع"
@@ -217,7 +295,6 @@ export default function PledgeFormPage() {
                   {...register('fullName')}
                 />
 
-                {/* Amount */}
                 <Input
                   id="amount"
                   type="number"
@@ -233,12 +310,10 @@ export default function PledgeFormPage() {
                 />
               </div>
 
-
-              {/* Contact Information Row - Desktop */}
+              {/* Contact Information */}
               <div className="space-y-4">
                 <h3 className="text-[#1E7B6B] font-semibold text-base">معلومات الاتصال *</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-                  {/* Phone */}
                   <PhoneInputField
                     label="رقم الهاتف*"
                     placeholder="رقم الهاتف"
@@ -247,7 +322,6 @@ export default function PledgeFormPage() {
                     error={errors.phoneNumber?.message}
                     dir="ltr"
                   />
-                  {/* Email */}
                   <Input
                     type="email"
                     label="البريد الإلكتروني"
@@ -257,7 +331,6 @@ export default function PledgeFormPage() {
                     dir="ltr"
                     {...register('email')}
                   />
-
                 </div>
                 {errors.phoneNumber && (
                   <p className="text-sm text-red-600 font-medium bg-red-50 p-2 rounded-md border border-red-200">{errors.phoneNumber.message}</p>
@@ -279,7 +352,7 @@ export default function PledgeFormPage() {
                   dir="rtl"
                   {...register('message')}
                 />
-                <p className="text-xs sm:text-sm    ">
+                <p className="text-xs sm:text-sm">
                   يمكنك إضافة رسالة دعم أو توجيهات خاصة لأهل ريف حلب الجنوبي (حد أقصى 500 حرف)
                 </p>
               </div>
@@ -315,21 +388,44 @@ export default function PledgeFormPage() {
                 </Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
+          )}
+        </CardContent>
+      </Card>
 
-        {/* Footer Note */}
-        <div className="mt-8 text-center">
-          <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl border border-gray-200 shadow-lg">
-            <p className="text-base text-gray-700 leading-relaxed">
-              سيتم مراجعة تبرعك وتأكيده قبل عرضه علناً.
-              <br />
-              جميع المعلومات الشخصية محفوظة بأمان وسرية تامة.
-            </p>
+      {/* WhatsApp Contact */}
+      <Card className="bg-blue-50 border-blue-200 w-full max-w-4xl">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                <MessageCircle className="h-5 w-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-blue-700 font-bold">واتساب</h3>
+                <p className="text-blue-600 text-sm font-somar" dir="ltr">+963 950 055 504</p>
+              </div>
+            </div>
+            <Button
+              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm"
+              onClick={() => window.open('https://wa.me/963950055504', '_blank')}
+            >
+              تواصل
+            </Button>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Footer Note */}
+      <div className="mt-6 text-center w-full max-w-4xl">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <p className="text-sm text-gray-600">
+            سيتم مراجعة تبرعك وتأكيده قبل عرضه علناً
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            جميع المعلومات الشخصية محفوظة بأمان وسرية تامة
+          </p>
         </div>
       </div>
     </div >
   );
 }
-
