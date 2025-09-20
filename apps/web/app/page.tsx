@@ -9,6 +9,7 @@ import { DonorsCount } from '@/components/home/DonorsCount';
 import { Button } from '@/components/ui/button';
 import { pledgeAPI } from '@/lib/api';
 import { socketService } from '@/lib/socket';
+import Link from 'next/link';
 
 interface Stats {
   totalAmount: number;
@@ -238,17 +239,20 @@ export default function HomePage() {
       <div className="flex flex-col lg:flex-row items-center justify-center mx-2 sm:mx-5 lg:mx-10 w-full gap-6 lg:gap-0">
         <div className="max-w-7xl mx-auto w-full">
           {/* Logo Section */}
-          <div className="flex justify-start mb-4 sm:mb-6 lg:mb-8">
+          <div className="flex justify-center items-center md:justify-start mb-4 sm:mb-6 lg:mb-8 flex-col">
             <Logo />
+            <p className='text-sm text-white font-somar font-bold mt-4 lg:hidden'>هذا الصفحة   متاحة فقط على اجهزة الحاسوب</p>
+            <p className='text-sm text-white font-somar font-bold mt-4 lg:hidden'>
+              <Link href='/donate' className='text-donation-teal px-3 py-2 bg-white rounded-lg'>العودة لصفحة التبرع </Link></p>
           </div>
 
           {/* اعلى التبرعات */}
-          <div className="mb-4 sm:mb-6 lg:mb-8 hidden sm:block">
+          <div className="mb-4 sm:mb-6 lg:mb-8 hidden lg:block">
             <TopDonations donations={topDonations} />
           </div>
 
           {/* صف (اجمالي التبرعات و عدد المتبرعين) */}
-          <div className=" flex-col sm:flex-row justify-between gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6 lg:mb-8 max-w-[900px] hidden sm:flex">
+          <div className=" flex-col sm:flex-row justify-between gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6 lg:mb-8 max-w-[900px] hidden lg:flex">
             <div className="flex justify-center w-full sm:w-auto">
               <div className={counterAnimation ? 'animate-glow' : ''}>
                 <TotalDonations totalAmount={stats.totalAmount} isLoading={stats.loading} />
@@ -264,7 +268,7 @@ export default function HomePage() {
         </div>
 
         {/* التبرعات المباشرة */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 items-center w-full lg:w-auto hidden sm:flex">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 items-center w-full lg:w-auto hidden lg:flex">
           <div className="flex justify-center w-full">
             <div className={newDonationAnimation ? 'animate-glow' : ''}>
               <LiveDonations donations={liveDonations} isLoading={stats.loading} />
