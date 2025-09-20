@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, AlertCircle, LucideArrowUp, LucideArrowDown } from 'lucide-react';
+import { Plus, AlertCircle, LucideArrowUp, LucideArrowDown, Edit } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
 import { useQuery } from '@tanstack/react-query';
 import AddPledgeForm from '@/components/Pledge/AddPledgeForm';
@@ -13,6 +13,7 @@ import PledgeList from '@/components/Pledge/PledgeList';
 import PledgeTable from '@/components/Pledge/PledgeTable';
 import ViewToggle from '@/components/Pledge/ViewToggle';
 import PledgeDetailsDialog from '@/components/Pledge/PledgeDetailsDialog';
+import EditPledgeForm from '@/components/Pledge/EditPledgeForm';
 
 interface Pledge {
   _id: string;
@@ -33,6 +34,8 @@ export default function PledgesManagement() {
   const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('all');
   const [selectedPledge, setSelectedPledge] = useState<Pledge | null>(null);
   const [isAddPledgeOpen, setIsAddPledgeOpen] = useState(false);
+  const [isEditPledgeOpen, setIsEditPledgeOpen] = useState(false);
+  const [pledgeToEdit, setPledgeToEdit] = useState<Pledge | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'table'>('table');
   const [smallScreen, setSmallScreen] = useState(false);
 
@@ -64,6 +67,19 @@ export default function PledgesManagement() {
 
   // Extract pledges array from response
   const pledges: Pledge[] = pledgesResponse?.data?.data || [];
+
+  // Handle edit pledge
+  const handleEditPledge = (pledge: Pledge) => {
+    setPledgeToEdit(pledge);
+    setIsEditPledgeOpen(true);
+  };
+
+  // Handle successful edit
+  const handleEditSuccess = () => {
+    setIsEditPledgeOpen(false);
+    setPledgeToEdit(null);
+    refetch(); // Refresh the data
+  };
 
   const filteredPledges = pledges.filter(pledge => {
     const matchesSearch =
@@ -199,6 +215,7 @@ export default function PledgesManagement() {
           filteredPledges={filteredPledges}
           totalCount={pledgesResponse?.data?.pagination?.total}
           onPledgeSelect={setSelectedPledge}
+          onEditPledge={handleEditPledge}
         />
       ) : (
         <PledgeTable
@@ -206,6 +223,7 @@ export default function PledgesManagement() {
           filteredPledges={filteredPledges}
           totalCount={pledgesResponse?.data?.pagination?.total}
           onPledgeSelect={setSelectedPledge}
+          onEditPledge={handleEditPledge}
         />
       )}
 
@@ -220,6 +238,14 @@ export default function PledgesManagement() {
       <AddPledgeForm
         isOpen={isAddPledgeOpen}
         onClose={() => setIsAddPledgeOpen(false)}
+      />
+
+      {/* Edit Pledge Form Component */}
+      <EditPledgeForm
+        isOpen={isEditPledgeOpen}
+        onClose={() => setIsEditPledgeOpen(false)}
+        pledge={pledgeToEdit}
+        onSuccess={handleEditSuccess}
       />
     </div>
   );

@@ -13,7 +13,8 @@ import {
     DollarSign,
     Phone,
     Mail,
-    MessageSquare
+    MessageSquare,
+    Edit
 } from 'lucide-react';
 
 interface Pledge {
@@ -33,13 +34,15 @@ interface PledgeTableProps {
     filteredPledges: Pledge[];
     totalCount?: number;
     onPledgeSelect: (pledge: Pledge) => void;
+    onEditPledge?: (pledge: Pledge) => void;
 }
 
 export default function PledgeTable({
     pledges,
     filteredPledges,
     totalCount,
-    onPledgeSelect
+    onPledgeSelect,
+    onEditPledge
 }: PledgeTableProps) {
     const getStatusBadge = (status: string) => {
         const statusConfig = {
@@ -162,6 +165,17 @@ export default function PledgeTable({
                                                 <Eye className="w-4 h-4 ml-1" />
                                                 عرض
                                             </Button>
+                                            {onEditPledge && (
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() => onEditPledge(pledge)}
+                                                    className="border-blue-500/30 text-blue-500 hover:bg-blue-500/10 font-somar"
+                                                >
+                                                    <Edit className="w-4 h-4 ml-1" />
+                                                    تعديل
+                                                </Button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>

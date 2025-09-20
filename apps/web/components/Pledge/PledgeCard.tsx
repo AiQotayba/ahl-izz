@@ -2,7 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Clock, XCircle, Calendar, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CheckCircle, Clock, XCircle, Calendar, User, Edit } from 'lucide-react';
 
 interface Pledge {
     _id: string;
@@ -19,9 +20,10 @@ interface Pledge {
 interface PledgeCardProps {
     pledge: Pledge;
     onSelect: (pledge: Pledge) => void;
+    onEdit?: (pledge: Pledge) => void;
 }
 
-export default function PledgeCard({ pledge, onSelect }: PledgeCardProps) {
+export default function PledgeCard({ pledge, onSelect, onEdit }: PledgeCardProps) {
     const getStatusBadge = (status: string) => {
         const statusConfig = {
             pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock, text: 'في الانتظار' },
@@ -41,20 +43,31 @@ export default function PledgeCard({ pledge, onSelect }: PledgeCardProps) {
     };
 
     return (
-        <div
-            onClick={() => onSelect(pledge)}
-            className="border cursor-pointer border-donation-teal/20 rounded-xl p-4 hover:bg-gradient-to-r hover:from-donation-teal/5 hover:to-donation-gold/5 transition-all duration-200 bg-white/50 backdrop-blur-sm"
-        >
+        <div className="relative border border-donation-teal/20 rounded-xl p-4 hover:bg-gradient-to-r hover:from-donation-teal/5 hover:to-donation-gold/5 transition-all duration-200 bg-white/50 backdrop-blur-sm">
             <div className="flex items-center justify-between">
                 <div className="flex-1">
                     <div className="flex items-center gap-4 mb-2 justify-between">
                         <h3 className="font-medium text-donation-darkTeal font-somar">
                             {pledge.fullName || 'مجهول'}
                         </h3>
-                        <span className="text-lg font-bold text-donation-gold font-somar">
-                            ${pledge.amount.toLocaleString()}
-                        </span>
-
+                        <div className="flex items-center gap-2">
+                            <span className="text-lg font-bold text-donation-gold font-somar">
+                                ${pledge.amount.toLocaleString()}
+                            </span>
+                            {onEdit && (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onEdit(pledge);
+                                    }}
+                                    className="h-8 w-8 p-0"
+                                >
+                                    <Edit className="h-4 w-4" />
+                                </Button>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-6 text-sm text-donation-teal font-somar justify-between">
@@ -79,6 +92,10 @@ export default function PledgeCard({ pledge, onSelect }: PledgeCardProps) {
                     )}
                 </div>
             </div>
+            <div 
+                className="absolute inset-0 cursor-pointer"
+                onClick={() => onSelect(pledge)}
+            ></div>
         </div>
     );
 }

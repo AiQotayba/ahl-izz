@@ -424,7 +424,7 @@ export default function PledgeFormPage() {
       </Card>
 
       {/* Footer Note */}
-      <div className="mt-6 text-center w-full max-w-4xl">
+      <div className="text-center w-full max-w-4xl">
         <div className="bg-gray-50 p-4 rounded-lg">
           <p className="text-sm text-gray-600">
             سيتم مراجعة تبرعك وتأكيده قبل عرضه علناً

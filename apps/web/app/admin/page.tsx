@@ -3,9 +3,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatsCard } from '@/components/StatsCard';
-import { Users, DollarSign, TrendingUp, Clock, CheckCircle, XCircle, Gavel } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, Clock, CheckCircle, XCircle, Gavel, BarChart3, PieChart } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
 import Link from 'next/link';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 
 interface DashboardStats {
   totalCount: number;
@@ -13,6 +14,19 @@ interface DashboardStats {
   pledgeStatusCounts: Record<string, number>;
   paymentMethodCounts: Record<string, number>;
 }
+
+// Colors for charts
+const COLORS = {
+  pending: '#F59E0B',
+  confirmed: '#10B981',
+  rejected: '#EF4444',
+  pledged: '#3B82F6',
+  received: '#10B981',
+  null: '#6B7280'
+};
+
+const STATUS_COLORS = ['#F59E0B', '#10B981', '#EF4444'];
+const PAYMENT_COLORS = ['#3B82F6', '#10B981'];
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
@@ -52,6 +66,22 @@ export default function AdminDashboard() {
     fetchStats();
   }, []);
 
+  // Prepare data for charts
+  const statusChartData = stats.pledgeStatusCounts ? Object.entries(stats.pledgeStatusCounts).map(([status, count]) => ({
+    name: status === 'pending' ? 'في الانتظار' : 
+          status === 'confirmed' ? 'مؤكد' : 
+          status === 'rejected' ? 'مرفوض' : status,
+    value: count,
+    color: COLORS[status as keyof typeof COLORS] || '#6B7280'
+  })) : [];
+
+  const paymentChartData = stats.paymentMethodCounts ? Object.entries(stats.paymentMethodCounts).map(([method, count]) => ({
+    name: method === 'pledged' ? 'تعهد' : 
+          method === 'received' ? 'مستلم' : method,
+    value: count,
+    color: COLORS[method as keyof typeof COLORS] || '#6B7280'
+  })) : [];
+
   return (
     <div className='h-screen overflow-y-auto p-4'>
       <div className="mb-8">
@@ -87,11 +117,102 @@ export default function AdminDashboard() {
         />
       </div>
 
-      {/* Status Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Status Distribution Chart */}
         <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-donation-darkTeal font-somar">توزيع التبرعات حسب الحالة</CardTitle>
+            <div className="flex items-center gap-2">
+              <PieChart className="w-5 h-5 text-donation-teal" />
+              <CardTitle className="text-donation-darkTeal font-somar">توزيع التبرعات حسب الحالة</CardTitle>
+            </div>
+            <CardDescription className="text-donation-teal font-somar">
+              مخطط دائري يوضح توزيع حالات التبرعات
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="h-64 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-donation-teal"></div>
+              </div>
+            ) : statusChartData.length > 0 ? (
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <RechartsPieChart>
+                    <Pie
+                      data={statusChartData}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={({ name, percent }:any) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="value"
+                    >
+                      {statusChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </RechartsPieChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-donation-teal font-somar">
+                <PieChart className="w-12 h-12 text-donation-teal/50 mx-auto mb-2" />
+                <p>لا توجد بيانات متاحة للعرض</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Payment Method Chart */}
+        <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-donation-teal" />
+              <CardTitle className="text-donation-darkTeal font-somar">توزيع التبرعات حسب طريقة الدفع</CardTitle>
+            </div>
+            <CardDescription className="text-donation-teal font-somar">
+              مخطط أعمدة يوضح طرق الدفع المختلفة
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="h-64 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-donation-teal"></div>
+              </div>
+            ) : paymentChartData.length > 0 ? (
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={paymentChartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#8884d8">
+                      {paymentChartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-donation-teal font-somar">
+                <BarChart3 className="w-12 h-12 text-donation-teal/50 mx-auto mb-2" />
+                <p>لا توجد بيانات متاحة للعرض</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Detailed Statistics */}
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-donation-darkTeal font-somar">تفاصيل حالات التبرعات</CardTitle>
             <CardDescription className="text-donation-teal font-somar">
               إحصائيات مفصلة لحالات التبرعات المختلفة
             </CardDescription>
@@ -131,7 +252,7 @@ export default function AdminDashboard() {
 
         <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-donation-darkTeal font-somar">توزيع التبرعات حسب طريقة الدفع</CardTitle>
+            <CardTitle className="text-donation-darkTeal font-somar">تفاصيل طرق الدفع</CardTitle>
             <CardDescription className="text-donation-teal font-somar">
               إحصائيات مفصلة لطرق الدفع المختلفة
             </CardDescription>
@@ -166,7 +287,7 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       {/* Quick Actions */}
       <div className="mt-6">

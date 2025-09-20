@@ -137,6 +137,58 @@ Content-Type: application/json
 
 ###
 
+### Complete Pledge Update (Admin)
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "fullName": "أحمد محمد",
+  "phoneNumber": "+963950055504",
+  "email": "ahmed@example.com",
+  "amount": 150.00,
+  "message": "تبرع لدعم التعليم",
+  "pledgeStatus": "confirmed",
+  "paymentMethod": "received"
+}
+
+###
+
+### Update Pledge Contact Info Only
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "fullName": "محمد علي",
+  "phoneNumber": "+963950055505",
+  "email": "mohammed@example.com"
+}
+
+###
+
+### Update Pledge Amount Only
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "amount": 200.00
+}
+
+###
+
+### Update Pledge Message Only
+PUT http://localhost:3001/api/pledges/{{pledgeId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "message": "رسالة محدثة للمتبرع"
+}
+
+###
+
 ### Erase PII from Pledge (Admin)
 DELETE http://localhost:3001/api/pledges/{{pledgeId}}/erase
 Authorization: Bearer {{accessToken}}

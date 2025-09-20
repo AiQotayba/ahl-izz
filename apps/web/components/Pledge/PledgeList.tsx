@@ -21,14 +21,16 @@ interface PledgeListProps {
     filteredPledges: Pledge[];
     totalCount?: number;
     onPledgeSelect: (pledge: Pledge) => void;
+    onEditPledge?: (pledge: Pledge) => void;
 }
 
 export default function PledgeList({
     pledges,
     filteredPledges,
     totalCount,
-    onPledgeSelect
-}: PledgeListProps) {
+    onPledgeSelect,
+    onEditPledge
+}: any) {
     return (
         <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
             <CardHeader>
@@ -44,6 +46,7 @@ export default function PledgeList({
                             key={pledge._id}
                             pledge={pledge}
                             onSelect={onPledgeSelect}
+                            onEdit={onEditPledge}
                         />
                     ))}
 
