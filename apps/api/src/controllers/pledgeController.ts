@@ -169,7 +169,7 @@ export const getPledges = async (req: Request, res: Response<any>): Promise<void
       Pledge.find({ pledgeStatus: 'confirmed' })
         .sort({ amount: -1 })
         .limit(5)
-        .select('fullName amount createdAt')
+        .select('fullName amount createdAt message')
         .lean()
     ]);
 
@@ -293,7 +293,7 @@ export const updatePledge = async (
       try {
         // Get the io instance from the request
         const io = global.io;
-        
+
         if (io) {
           // Emit pledge updated event to admin room
           emitPledgeUpdated(io, {
@@ -414,19 +414,21 @@ export const getPublicPledges = async (
       Pledge.find({ pledgeStatus: 'confirmed' })
         .sort({ createdAt: -1 })
         .limit(limit)
+        .select('fullName amount createdAt message')
         .lean(),
       Pledge.find({ pledgeStatus: 'confirmed' })
         .sort({ amount: -1 })
         .limit(5)
-        .select('fullName amount createdAt')
+        // .select('fullName amount createdAt message')
         .lean()
     ]);
+    console.log(pledges);
 
     const maskedPledges = pledges.map(pledge => maskPII(pledge));
     const maskedTopDonations = topDonations.map(donation => maskPII(donation));
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       data: maskedPledges,
       topDonations: maskedTopDonations
     });

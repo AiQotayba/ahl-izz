@@ -8,6 +8,7 @@ export const maskPII = (pledge: any): any => {
     _id: pledge._id,
     fullName: pledge.fullName ,// ? maskName(pledge.fullName) : undefined, 
     amount: pledge.amount,
+    message: pledge.message,
     createdAt: pledge.createdAt,
   };
 };

@@ -30,6 +30,7 @@ interface LiveDonation {
   _id: string;
   fullName: string;
   amount: number;
+  message: string;
   createdAt: string;
 }
 
@@ -63,7 +64,7 @@ export default function HomePage() {
     setTimeout(() => setNewDonationAnimation(null), 3000);
 
     // Add to live donations
-    setLiveDonations(prev => [
+    setLiveDonations((prev: any) => [
       newDonation,
       ...prev.slice(0, 9) // Keep only latest 10
     ]);
@@ -236,8 +237,8 @@ export default function HomePage() {
       }}
       dir="rtl"
     >
-      <div className="flex flex-col lg:flex-row items-center justify-center mx-2 sm:mx-5 lg:mx-10 w-full gap-6 lg:gap-0">
-        <div className="max-w-7xl mx-auto w-full">
+      <div className="flex flex-col gap-6 items-center justify-center lg:flex-row lg:mx-10 mx-2 sm:mx-5 w-full">
+        <div className="max-w-7xl ">
           {/* Logo Section */}
           <div className="flex justify-center items-center lg:items-start md:justify-start mb-4 sm:mb-6 lg:mb-8 flex-col">
             <Logo />
@@ -268,7 +269,7 @@ export default function HomePage() {
         </div>
 
         {/* التبرعات المباشرة */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 items-center w-full lg:w-auto hidden lg:flex">
+        <div className="hidden items-center lg:flex max-w-7xl px-3 sm:px-6">
           <div className="flex justify-center w-full">
             <div className={newDonationAnimation ? 'animate-glow' : ''}>
               <LiveDonations donations={liveDonations} isLoading={stats.loading} />

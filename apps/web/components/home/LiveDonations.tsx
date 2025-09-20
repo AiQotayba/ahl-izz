@@ -7,6 +7,7 @@ interface LiveDonation {
     _id: string;
     fullName: string;
     amount: number;
+    message: string;
     createdAt: string;
 }
 
@@ -57,10 +58,13 @@ export function LiveDonations({ donations = [], isLoading }: LiveDonationsProps)
                     <div key={donation._id} className="flex w-full items-center justify-between gap-4">
 
                         {/* Donor Name */}
-                        <div className=" text-donation-teal  flex items-center  max-w-[130px]">
-                            <span className="text-sm leading-none line-clamp-1 tracking-tight truncate font-somar font-semibold text-md  text-right">
+                        <div className=" text-donation-teal  flex items-start  max-w-[130px] flex-col">
+                            <span className="text-lg max-w-[130px]  leading-none line-clamp-1 tracking-tight truncate font-somar font-semibold text-md  text-right">
 
                                 {donation.fullName || 'فاعل خير'}
+                            </span>
+                            <span className="text-sm max-w-[130px] mt-1 leading-none line-clamp-1 tracking-tight truncate font-somar font-thin text-md  text-right">
+                                {donation.message || ''}
                             </span>
                         </div>
 
