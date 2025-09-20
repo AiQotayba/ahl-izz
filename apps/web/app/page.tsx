@@ -35,6 +35,19 @@ interface LiveDonation {
 }
 
 export default function HomePage() {
+  // Add CSS to hide scrollbars and ensure proper scaling
+  useEffect(() => {
+    // Hide scrollbars globally
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+
+    return () => {
+      // Restore scrollbars on cleanup
+      document.body.style.overflow = 'auto';
+      document.documentElement.style.overflow = 'auto';
+    };
+  }, []);
+
   const [stats, setStats] = useState<Stats>({
     totalAmount: 0,
     totalCount: 0,
@@ -234,6 +247,11 @@ export default function HomePage() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
+        transform: 'scale(1.30)',
+        transformOrigin: 'center center',
+        width: '100vw',
+        height: '100vh',
+        overflow: 'hidden',
       }}
       dir="rtl"
     >
@@ -253,16 +271,12 @@ export default function HomePage() {
           </div>
 
           {/* صف (اجمالي التبرعات و عدد المتبرعين) */}
-          <div className=" flex-col sm:flex-row justify-between gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6 lg:mb-8 max-w-[900px] hidden lg:flex">
-            <div className="flex justify-center w-full sm:w-auto">
-              <div className={counterAnimation ? 'animate-glow' : ''}>
-                <TotalDonations totalAmount={stats.totalAmount} isLoading={stats.loading} />
-              </div>
+          <div className=" flex-col sm:flex-row justify-between items-end gap-4 sm:gap-6 lg:gap-8 mb-4 sm:mb-6 lg:mb-8 max-w-[900px] hidden lg:flex">
+            <div className={`flex justify-center w-full sm:w-auto ${counterAnimation ? 'animate-glow' : ''}`}>
+              <TotalDonations totalAmount={stats.totalAmount} isLoading={stats.loading} />
             </div>
-            <div className="flex justify-center w-full sm:w-auto">
-              <div className={counterAnimation ? 'animate-glow' : ''}>
-                <DonorsCount count={stats.totalCount} isLoading={stats.loading} />
-              </div>
+            <div className={`flex justify-center w-full sm:w-auto ${counterAnimation ? 'animate-glow' : ''}`}>
+              <DonorsCount count={stats.totalCount} isLoading={stats.loading} />
             </div>
           </div>
 
@@ -276,8 +290,8 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }
 

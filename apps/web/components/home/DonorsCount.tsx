@@ -33,17 +33,17 @@ export function DonorsCount({ count = 2000, isLoading = false }: DonorsCountProp
   }
 
   return (
-    <div className="  ">
-      <div className="text-white text-center">
-        <h3 className="rounded-2xl shadow-lg bg-[#004B4B] p-4 w-full font-somar font-bold text-xl leading-none tracking-tight flex items-center justify-center mb-4">
-          عدد المتبرعين: {displayCount.toLocaleString()}
-        </h3>
+    <div className="text-white text-center">
+      <h3 className="rounded-2xl shadow-lg bg-[#004B4B] p-4 w-full font-somar font-bold text-xl leading-none tracking-tight flex items-center justify-center mb-4">
+        عدد المتبرعين: {displayCount.toLocaleString()}
+      </h3>
 
-        {/* QR Code Placeholder */}
-        <Link href="/donate" className="w-32 h-32 bg-white rounded-lg mx-auto flex items-center justify-center" >
-          <Image src="/images/qr-code.png" alt="QR Code" width={115} height={115} />
-        </Link>
-      </div>
+      {/* QR Code Placeholder */}
+      <Link href="/donate"  >
+        <Image src="/images/qr-code.png" alt="QR Code" width={180} height={180}
+          className=" bg-white rounded-lg mx-auto flex items-center justify-center"
+        />
+      </Link>
     </div>
   );
 }
