@@ -14,17 +14,11 @@ export const api = axios.create({
 });
 
 // Request interceptor to add auth token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) { config.headers.Authorization = `Bearer ${token}` }
+  return config;
+}, (error) => { return Promise.reject(error) }
 );
 
 // Response interceptor to handle errors and token refresh
@@ -52,10 +46,10 @@ api.interceptors.response.use(
       try {
         const response = await api.post('/api/auth/refresh');
         const { accessToken } = response.data.data;
-        
+
         localStorage.setItem('accessToken', accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-        
+
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem('accessToken');
@@ -82,10 +76,10 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (email: string, password: string) =>
     api.post('/api/auth/login', { email, password }),
-  
+
   refresh: () =>
     api.post('/api/auth/refresh'),
-  
+
   logout: () =>
     api.post('/api/auth/logout'),
 };
@@ -114,22 +108,22 @@ export const pledgeAPI = {
       throw error;
     }
   },
-  
+
   getPublic: (limit = 50) =>
     api.get(`/api/pledges/public?limit=${limit}`),
-  
+
   getStats: () =>
     api.get('/api/pledges/stats'),
-  
+
   getAll: (params?: any) =>
     api.get('/api/pledges', { params }),
-  
+
   getById: (id: string) =>
     api.get(`/api/pledges/${id}`),
-  
+
   update: (id: string, data: any) =>
     api.put(`/api/pledges/${id}`, data),
-  
+
   erasePII: (id: string) =>
     api.delete(`/api/pledges/${id}/erase`),
 };

@@ -3,21 +3,23 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatsCard } from '@/components/StatsCard';
-import { Users, DollarSign, TrendingUp, Clock } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, Clock, CheckCircle, XCircle, Gavel } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
 import Link from 'next/link';
 
 interface DashboardStats {
   totalCount: number;
   totalAmount: number;
-  statusCounts: Record<string, number>;
+  pledgeStatusCounts: Record<string, number>;
+  paymentMethodCounts: Record<string, number>;
 }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats>({
     totalCount: 0,
     totalAmount: 0,
-    statusCounts: {}
+    pledgeStatusCounts: {},
+    paymentMethodCounts: {}
   });
   const [loading, setLoading] = useState(true);
 
@@ -29,7 +31,8 @@ export default function AdminDashboard() {
           setStats({
             totalCount: response.data.data.totalCount || 0,
             totalAmount: response.data.data.totalAmount || 0,
-            statusCounts: response.data.data.statusCounts || {}
+            pledgeStatusCounts: response.data.data.pledgeStatusCounts || {},
+            paymentMethodCounts: response.data.data.paymentMethodCounts || {}
           });
         }
       } catch (error) {
@@ -38,7 +41,8 @@ export default function AdminDashboard() {
         setStats({
           totalCount: 0,
           totalAmount: 0,
-          statusCounts: {}
+          pledgeStatusCounts: {},
+          paymentMethodCounts: {}
         });
       } finally {
         setLoading(false);
@@ -49,10 +53,10 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className='h-screen overflow-y-auto'>
+    <div className='h-screen overflow-y-auto p-4'>
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-donation-darkTeal font-somar mb-2">مركز التحكم الإداري</h1>
-        <p className="text-donation-teal font-somar text-lg">نظرة شاملة على تقدم حملة حلب الإغاثية وإحصائيات التبرعات</p>
+        <h1 className="text-4xl font-bold text-donation-darkTeal font-somar mb-2">لوحة التحكم</h1>
+        <p className="text-donation-teal font-somar text-lg">نظرة شاملة على تقدم حملة أهُل العز لايُنسون وإحصائيات التبرعات</p>
       </div>
 
       {/* Stats Grid */}
@@ -71,13 +75,13 @@ export default function AdminDashboard() {
         />
         <StatsCard
           title="تم التأكيد"
-          value={stats.statusCounts?.confirmed?.toLocaleString() || '0'}
-          icon={<TrendingUp className="h-8 w-8 text-donation-green" />}
+          value={stats.pledgeStatusCounts?.confirmed?.toLocaleString() || '0'}
+          icon={<CheckCircle className="h-8 w-8 text-donation-green" />}
           loading={loading}
         />
         <StatsCard
           title="في انتظار المراجعة"
-          value={stats.statusCounts?.pending?.toLocaleString() || '0'}
+          value={stats.pledgeStatusCounts?.pending?.toLocaleString() || '0'}
           icon={<Clock className="h-8 w-8 text-donation-olive" />}
           loading={loading}
         />
@@ -94,17 +98,26 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {stats.statusCounts && Object.entries(stats.statusCounts).map(([status, count]) => (
+              {stats.pledgeStatusCounts && Object.entries(stats.pledgeStatusCounts).map(([status, count]) => (
                 <div key={status} className="flex items-center justify-between p-3 bg-gradient-to-r from-donation-teal/5 to-donation-gold/5 rounded-lg">
-                  <span className="capitalize text-sm font-medium text-donation-darkTeal font-somar">
-                    {status === 'pending' ? 'في انتظار المراجعة' : status === 'confirmed' ? 'تم التأكيد' : status === 'rejected' ? 'تم الرفض' : status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {status === 'pending' && <Clock className="w-4 h-4 text-donation-olive" />}
+                    {status === 'confirmed' && <CheckCircle className="w-4 h-4 text-donation-green" />}
+                    {status === 'rejected' && <XCircle className="w-4 h-4 text-red-500" />}
+                    {status === 'null' && <TrendingUp className="w-4 h-4 text-donation-teal" />}
+                    <span className="text-sm font-medium text-donation-darkTeal font-somar">
+                      {status === 'pending' ? 'في انتظار المراجعة' :
+                        status === 'confirmed' ? 'تم التأكيد' :
+                          status === 'rejected' ? 'تم الرفض' :
+                            status === 'null' ? 'غير محدد' : status}
+                    </span>
+                  </div>
                   <span className="text-sm font-bold text-donation-teal font-somar">
                     {count.toLocaleString()}
                   </span>
                 </div>
               ))}
-              {(!stats.statusCounts || Object.keys(stats.statusCounts).length === 0) && (
+              {(!stats.pledgeStatusCounts || Object.keys(stats.pledgeStatusCounts).length === 0) && (
                 <div className="text-center py-4 text-donation-teal font-somar">
                   <div className="mb-2">
                     <TrendingUp className="w-8 h-8 text-donation-teal/50 mx-auto" />
@@ -116,6 +129,47 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
+        <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-donation-darkTeal font-somar">توزيع التبرعات حسب طريقة الدفع</CardTitle>
+            <CardDescription className="text-donation-teal font-somar">
+              إحصائيات مفصلة لطرق الدفع المختلفة
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {stats.paymentMethodCounts && Object.entries(stats.paymentMethodCounts).map(([method, count]) => (
+                <div key={method} className="flex items-center justify-between p-3 bg-gradient-to-r from-donation-teal/5 to-donation-gold/5 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    {method === 'pledged' && <Gavel className="w-4 h-4 text-blue-500" />}
+                    {method === 'received' && <CheckCircle className="w-4 h-4 text-donation-green" />}
+                    {method === 'null' && <TrendingUp className="w-4 h-4 text-donation-teal" />}
+                    <span className="text-sm font-medium text-donation-darkTeal font-somar">
+                      {method === 'pledged' ? 'تعهد' :
+                        method === 'received' ? 'تم الاستلام' :
+                          method === 'null' ? 'غير محدد' : method}
+                    </span>
+                  </div>
+                  <span className="text-sm font-bold text-donation-teal font-somar">
+                    {count.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+              {(!stats.paymentMethodCounts || Object.keys(stats.paymentMethodCounts).length === 0) && (
+                <div className="text-center py-4 text-donation-teal font-somar">
+                  <div className="mb-2">
+                    <Gavel className="w-8 h-8 text-donation-teal/50 mx-auto" />
+                  </div>
+                  <p>لا توجد إحصائيات متاحة حالياً</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-6">
         <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
           <CardHeader>
             <CardTitle className="text-donation-darkTeal font-somar">الإجراءات السريعة</CardTitle>

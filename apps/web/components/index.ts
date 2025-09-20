@@ -1,11 +1,10 @@
 // Export all components
-export { LiveDonations } from './LiveDonations';
-export { TopDonations } from './TopDonations';
-export { TotalDonations } from './TotalDonations';
-export { LargeTotalDonations } from './LargeTotalDonations';
+export { LiveDonations } from './home/LiveDonations';
+export { TopDonations } from './home/TopDonations';
+export { TotalDonations } from './home/TotalDonations';
+export { LargeTotalDonations } from './home/LargeTotalDonations';
 export { Logo } from './Logo';
-export { DonorsCount } from './DonorsCount';
-export { PledgeFeed } from './PledgeFeed';
+export { DonorsCount } from './home/DonorsCount';
 export { StatsCard } from './StatsCard';
 
 // Export UI components

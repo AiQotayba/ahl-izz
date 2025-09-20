@@ -1,14 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { Logo } from '@/components/Logo';
-import { LiveDonations } from '@/components/LiveDonations';
-import { TopDonations } from '@/components/TopDonations';
-import { TotalDonations } from '@/components/TotalDonations';
-import { DonorsCount } from '@/components/DonorsCount';
+import { LiveDonations } from '@/components/home/LiveDonations';
+import { TopDonations } from '@/components/home/TopDonations';
+import { TotalDonations } from '@/components/home/TotalDonations';
+import { DonorsCount } from '@/components/home/DonorsCount';
 import { Button } from '@/components/ui/button';
-import { Heart } from 'lucide-react';
 import { pledgeAPI } from '@/lib/api';
 import { socketService } from '@/lib/socket';
 
@@ -167,7 +165,7 @@ export default function HomePage() {
 
   return (
     <div
-      className="flex flex-col lg:flex-row items-center justify-center min-h-screen overflow-hidden p-3 sm:p-6 relative m-auto"
+      className="flex flex-col lg:flex-row items-center justify-center min-h-screen overflow-hidden p-3 sm:p-6 relative  m-4"
       style={{
         backgroundImage: 'url(/images/bg2.png)',
         backgroundSize: 'cover',
