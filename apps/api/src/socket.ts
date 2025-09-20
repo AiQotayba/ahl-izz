@@ -102,9 +102,9 @@ export const emitNewPledge = (io: SocketIOServer, pledge: any) => {
 export const emitStatsUpdate = async (io: SocketIOServer) => {
   try {
     const [totalCount, totalAmount] = await Promise.all([
-      Pledge.countDocuments({ status: 'confirmed' }),
+      Pledge.countDocuments({ pledgeStatus: 'confirmed' }),
       Pledge.aggregate([
-        { $match: { status: 'confirmed' } },
+        { $match: { pledgeStatus: 'confirmed' } },
         { $group: { _id: null, total: { $sum: '$amount' } } }
       ])
     ]);

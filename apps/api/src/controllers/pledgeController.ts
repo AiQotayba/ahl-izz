@@ -3,6 +3,7 @@ import { body, validationResult, query } from 'express-validator';
 import { IPledge, Pledge } from '../models/Pledge';
 import { logSecurityEvent } from '../utils/logger';
 import { maskPII, sanitizeText } from '../utils/maskPII';
+import { emitPledgeUpdated, emitStatsUpdate } from '../socket';
 
 // Validation rules for pledge submission
 export const validatePledgeSubmission = [
@@ -266,6 +267,33 @@ export const updatePledge = async (
       updatedFields: Object.keys(updateData),
       newStatus: pledge.pledgeStatus
     });
+
+    // Send socket notification if pledge is confirmed
+    if (pledge.pledgeStatus === 'confirmed') {
+      try {
+        // Get the io instance from the request
+        const io = (req as any).app.get('io');
+        
+        if (io) {
+          // Emit pledge updated event to admin room
+          emitPledgeUpdated(io, {
+            _id: pledge._id,
+            fullName: pledge.fullName,
+            amount: pledge.amount,
+            pledgeStatus: pledge.pledgeStatus,
+            createdAt: pledge.createdAt
+          });
+
+          // Emit stats update to public room
+          await emitStatsUpdate(io);
+
+          console.log(`Socket notification sent for confirmed pledge: ${pledge._id}`);
+        }
+      } catch (socketError) {
+        console.error('Failed to send socket notification:', socketError);
+        // Don't fail the request if socket fails
+      }
+    }
 
     res.json({
       success: true,

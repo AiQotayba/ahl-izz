@@ -90,7 +90,16 @@ export default function HomePage() {
 
   // Set up socket connection for real-time updates
   useEffect(() => {
+    console.log('Setting up socket connection...');
     socketService.connect();
+    
+    // Log connection status
+    const checkConnection = () => {
+      console.log('Socket connected:', socketService.connected);
+    };
+    
+    // Check connection after a short delay
+    const timeoutId = setTimeout(checkConnection, 1000);
 
     // Listen for new pledges
     const handleNewPledge = (data: any) => {
@@ -100,7 +109,7 @@ export default function HomePage() {
       setStats(prev => ({
         ...prev,
         totalAmount: prev.totalAmount + (data.amount || 0),
-        donorsCount: prev.totalCount + 1
+        totalCount: prev.totalCount + 1
       }));
 
       // Add to live donations
@@ -123,16 +132,37 @@ export default function HomePage() {
       setStats(prev => ({
         ...prev,
         totalAmount: data.totalAmount || prev.totalAmount,
-        donorsCount: data.donorsCount || prev.totalCount
+        totalCount: data.totalCount || prev.totalCount
       }));
+    };
+
+    // Listen for pledge updates (when confirmed)
+    const handlePledgeUpdated = (data: any) => {
+      console.log('Pledge updated received:', data);
+      
+      // If pledge was confirmed, add to live donations
+      if (data.pledge && data.pledge.pledgeStatus === 'confirmed') {
+        setLiveDonations(prev => [
+          {
+            _id: data.pledge._id,
+            fullName: data.pledge.fullName ? `${data.pledge.fullName} من حلب` : 'مجهول',
+            amount: data.pledge.amount,
+            createdAt: data.pledge.createdAt
+          },
+          ...prev.slice(0, 9) // Keep only latest 10
+        ]);
+      }
     };
 
     socketService.on('new-pledge', handleNewPledge);
     socketService.on('stats-update', handleStatsUpdate);
+    socketService.on('pledge-updated', handlePledgeUpdated);
 
     return () => {
+      clearTimeout(timeoutId);
       socketService.off('new-pledge', handleNewPledge);
       socketService.off('stats-update', handleStatsUpdate);
+      socketService.off('pledge-updated', handlePledgeUpdated);
     };
   }, []);
 
