@@ -78,9 +78,6 @@ export default function PledgeTable({
         <Card className="bg-white/90 backdrop-blur-sm border-donation-teal/20 shadow-lg">
             <CardHeader>
                 <CardTitle className="text-donation-darkTeal font-somar">جدول التبرعات</CardTitle>
-                <CardDescription className="text-donation-teal font-somar">
-                    عرض {filteredPledges.length} تبرع من أصل {totalCount || pledges.length} تبرع إجمالي
-                </CardDescription>
             </CardHeader>
             <CardContent>
                 <div className="overflow-x-auto">
@@ -164,7 +161,7 @@ export default function PledgeTable({
                                             >
                                                 <Eye className="w-4 h-4 ml-1" />
                                                 عرض
-                                            </Button> 
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>
