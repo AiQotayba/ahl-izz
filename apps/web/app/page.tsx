@@ -154,15 +154,44 @@ export default function HomePage() {
       }
     };
 
+    // Listen for pledge confirmed events (from pledgeController)
+    const handlePledgeConfirmed = (data: any) => {
+      console.log('Pledge confirmed received:', data);
+      
+      // Update stats with new data
+      if (data.stats) {
+        setStats(prev => ({
+          ...prev,
+          totalAmount: data.stats.totalAmount || prev.totalAmount,
+          totalCount: data.stats.totalCount || prev.totalCount
+        }));
+      }
+      
+      // Add to live donations
+      if (data.pledge) {
+        setLiveDonations(prev => [
+          {
+            _id: data.pledge._id,
+            fullName: data.pledge.fullName ? `${data.pledge.fullName} من حلب` : 'مجهول',
+            amount: data.pledge.amount,
+            createdAt: data.pledge.createdAt
+          },
+          ...prev.slice(0, 9) // Keep only latest 10
+        ]);
+      }
+    };
+
     socketService.on('new-pledge', handleNewPledge);
     socketService.on('stats-update', handleStatsUpdate);
     socketService.on('pledge-updated', handlePledgeUpdated);
+    socketService.on('pledge_confirmed', handlePledgeConfirmed);
 
     return () => {
       clearTimeout(timeoutId);
       socketService.off('new-pledge', handleNewPledge);
       socketService.off('stats-update', handleStatsUpdate);
       socketService.off('pledge-updated', handlePledgeUpdated);
+      socketService.off('pledge_confirmed', handlePledgeConfirmed);
     };
   }, []);
 

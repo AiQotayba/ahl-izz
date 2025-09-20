@@ -207,7 +207,7 @@ export default function PledgeDetailsDialog({ pledge, isOpen, onClose }: PledgeD
               <div>
                 <p className="text-sm text-gray-600 font-somar mb-2">رسالة المتبرع</p>
                 <p className="font-somar text-donation-darkTeal leading-relaxed">
-                  \"{pledge.message}\"
+                &quot;{pledge.message}&quot;
                 </p>
               </div>
             </div>

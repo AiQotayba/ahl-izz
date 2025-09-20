@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket Test</title>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .connected { background: #d4edda; color: #155724; }
+        .disconnected { background: #f8d7da; color: #721c24; }
+        .message {
+            background: #e9ecef;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        .event {
+            font-weight: bold;
+            color: #007bff;
+        }
+        .data {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>اختبار Socket - Aleppo Azz</h1>
+        
+        <div id="status" class="status disconnected">
+            غير متصل
+        </div>
+        
+        <div>
+            <h3>الأحداث المستلمة:</h3>
+            <div id="messages"></div>
+        </div>
+        
+        <div>
+            <h3>إحصائيات الاتصال:</h3>
+            <p>الأحداث المستلمة: <span id="eventCount">0</span></p>
+            <p>آخر حدث: <span id="lastEvent">-</span></p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3001'; // أو URL الخاص بك
+        const socket = io(API_URL, {
+            transports: ['websocket', 'polling']
+        });
+
+        const statusEl = document.getElementById('status');
+        const messagesEl = document.getElementById('messages');
+        const eventCountEl = document.getElementById('eventCount');
+        const lastEventEl = document.getElementById('lastEvent');
+        
+        let eventCount = 0;
+
+        // تحديث حالة الاتصال
+        socket.on('connect', () => {
+            statusEl.textContent = 'متصل';
+            statusEl.className = 'status connected';
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', () => {
+            statusEl.textContent = 'غير متصل';
+            statusEl.className = 'status disconnected';
+            console.log('Disconnected from server');
+        });
+
+        socket.on('error', (error) => {
+            console.error('Socket error:', error);
+            addMessage('error', 'خطأ في الاتصال: ' + error);
+        });
+
+        // استماع لجميع الأحداث
+        const events = [
+            'new-pledge',
+            'stats-update', 
+            'pledge-updated',
+            'pledge_confirmed'
+        ];
+
+        events.forEach(eventName => {
+            socket.on(eventName, (data) => {
+                eventCount++;
+                eventCountEl.textContent = eventCount;
+                lastEventEl.textContent = eventName;
+                
+                console.log(`Event ${eventName}:`, data);
+                addMessage(eventName, data);
+            });
+        });
+
+        function addMessage(event, data) {
+            const messageEl = document.createElement('div');
+            messageEl.className = 'message';
+            
+            const eventEl = document.createElement('div');
+            eventEl.className = 'event';
+            eventEl.textContent = `حدث: ${event}`;
+            
+            const dataEl = document.createElement('div');
+            dataEl.className = 'data';
+            dataEl.textContent = `البيانات: ${JSON.stringify(data, null, 2)}`;
+            
+            messageEl.appendChild(eventEl);
+            messageEl.appendChild(dataEl);
+            
+            messagesEl.insertBefore(messageEl, messagesEl.firstChild);
+            
+            // الاحتفاظ بآخر 20 رسالة فقط
+            while (messagesEl.children.length > 20) {
+                messagesEl.removeChild(messagesEl.lastChild);
+            }
+        }
+
+        // إضافة رسالة ترحيب
+        addMessage('info', 'تم بدء اختبار Socket. افتح لوحة التحكم وأكد تبرعاً لرؤية الأحداث.');
+    </script>
+</body>
+</html>
