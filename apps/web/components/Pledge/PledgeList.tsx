@@ -41,7 +41,7 @@ export default function PledgeList({
             </CardHeader>
             <CardContent className='p-2 md:p-4'>
                 <div className="space-y-4">
-                    {filteredPledges.map((pledge) => (
+                    {filteredPledges.map((pledge: Pledge) => (
                         <PledgeCard
                             key={pledge._id}
                             pledge={pledge}
