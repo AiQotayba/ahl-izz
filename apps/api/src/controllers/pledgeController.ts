@@ -4,6 +4,7 @@ import { IPledge, Pledge } from '../models/Pledge';
 import { logSecurityEvent } from '../utils/logger';
 import { maskPII, sanitizeText } from '../utils/maskPII';
 import { emitPledgeUpdated, emitStatsUpdate } from '../socket';
+import ExcelJS from 'exceljs';
 
 // Validation rules for pledge submission
 export const validatePledgeSubmission = [
@@ -54,7 +55,7 @@ export const validatePledgeUpdate = [
   body('amount')
     .optional()
     .isFloat({ min: 1 })
-    .withMessage('Amount must be min 1  ')
+    .withMessage('Amount must be at least 1')
 ];
 
 // Submit new pledge
@@ -202,6 +203,7 @@ export const getPledges = async (req: Request, res: Response<any>): Promise<void
     });
 
   } catch (error) {
+    console.error('Get pledges error:', error);
     res.status(500).json({
       success: false,
       error: 'Failed to fetch pledges'
@@ -484,3 +486,71 @@ export const getPledgeStats = async (
   }
 };
 
+export const excelPledge = async (req: Request, res: Response<any>): Promise<void> => {
+  try {
+    // Get all pledges
+    const pledges = await Pledge.find({}).sort({ createdAt: -1 });
+    
+    // Create Excel workbook
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('التبرعات');
+    
+    // Add headers
+    worksheet.addRow([
+      'الرقم',
+      'الاسم',
+      'البريد الإلكتروني',
+      'رقم الهاتف',
+      'المبلغ',
+      'الرسالة',
+      'حالة التبرع',
+      'طريقة الدفع',
+      'تاريخ الإنشاء'
+    ]);
+    
+    // Style headers
+    const headerRow = worksheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE0E0E0' }
+    };
+    
+    // Add data rows
+    pledges.forEach((pledge, index) => {
+      worksheet.addRow([
+        index + 1,
+        pledge.fullName || 'غير محدد',
+        pledge.email || 'غير محدد',
+        pledge.phoneNumber || 'غير محدد',
+        pledge.amount,
+        pledge.message || 'لا توجد رسالة',
+        pledge.pledgeStatus === 'confirmed' ? 'مؤكد' : 
+        pledge.pledgeStatus === 'pending' ? 'معلق' : 'مرفوض',
+        pledge.paymentMethod === 'received' ? 'مستلم' : 'متعهد',
+        pledge.createdAt ? new Date(pledge.createdAt as Date).toLocaleDateString('ar-SA') : 'غير محدد'
+      ]);
+    });
+    
+    // Auto-fit columns
+    worksheet.columns.forEach(column => {
+      column.width = 15;
+    });
+    
+    // Set response headers
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="التبرعات.xlsx"');
+    
+    // Write to response
+    await workbook.xlsx.write(res);
+    res.end();
+    
+  } catch (error) {
+    console.error('Excel export error:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'فشل في تصدير البيانات إلى Excel' 
+    });
+  }
+};

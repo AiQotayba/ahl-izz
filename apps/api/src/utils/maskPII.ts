@@ -6,7 +6,7 @@
 export const maskPII = (pledge: any): any => {
   return {
     _id: pledge._id,
-    fullName: pledge.fullName ,// ? maskName(pledge.fullName) : undefined, 
+    fullName: pledge.fullName, 
     amount: pledge.amount,
     message: pledge.message,
     createdAt: pledge.createdAt,

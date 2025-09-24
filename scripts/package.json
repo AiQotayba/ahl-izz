@@ -1,0 +1,17 @@
+{
+  "name": "aleppo-excel-converter",
+  "version": "1.0.0",
+  "description": "سكربت تحويل بيانات التبرعات إلى Excel",
+  "main": "convert-to-excel.js",
+  "scripts": {
+    "convert": "node convert-to-excel.js",
+    "install-deps": "npm install exceljs"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0"
+  },
+  "keywords": ["excel", "converter", "pledges", "aleppo"],
+  "author": "Aleppo Azz Team",
+  "license": "MIT"
+}
+

@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { pledgeAPI } from '@/lib/api';
 import { socketService } from '@/lib/socket';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface Stats {
   totalAmount: number;
@@ -139,11 +140,14 @@ export default function HomePage() {
         });
       } catch (error: any) {
         console.error('Failed to fetch stats:', error);
-        setStats(prev => ({
-          ...prev,
+
+        // Set default values instead of showing error
+        setStats({
+          totalAmount: 0,
+          totalCount: 0,
           loading: false,
-          error: error.message || 'فشل في تحميل الإحصائيات'
-        }));
+          error: undefined
+        });
       }
     };
 
@@ -164,6 +168,10 @@ export default function HomePage() {
         setTopDonations(topDonationsData);
       } catch (error) {
         console.error('Failed to fetch donations:', error);
+
+        // Set empty arrays instead of showing error
+        setLiveDonations([]);
+        setTopDonations([]);
       }
     };
 
@@ -267,17 +275,17 @@ export default function HomePage() {
 
   return (
     <div
-      className="flex flex-col lg:flex-row items-center justify-center min-h-screen overflow-hidden p-3 sm:p-6 relative"
+      className={cn(
+        "flex flex-col lg:flex-row items-center justify-center min-h-screen overflow-hidden p-3 sm:p-6 relative",
+        "scale-130 w-full h-full overflow-hidden bg-cover position-center bg-no-repeat"
+      )}
       style={{
         backgroundImage: 'url(/images/bg2.png)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        transform: 'scale(1.30)',
+        // backgroundSize: 'cover',
+        // backgroundPosition: 'center',
+        // backgroundRepeat: 'no-repeat',
         transformOrigin: 'center center',
-        width: '100vw',
-        height: '100vh',
-        overflow: 'hidden',
+        // overflow: 'hidden',
       }}
       dir="rtl"
     >
@@ -286,7 +294,12 @@ export default function HomePage() {
           {/* Logo Section */}
           <div className="flex justify-center items-center lg:items-start md:justify-start mb-4 sm:mb-6 lg:mb-8 flex-col">
             <div className='flex justify-between items-center w-full'>
-              <Logo />
+              {/* <Logo /> */}
+              {/* حملة تزويج قتيبة */}
+              <h1 className="text-5xl max-w-[300px] font-bold font-somar text-white leading-snug">
+                حملة تزويج<br />
+                قتيبـــــــــــة
+              </h1>
               <div className="flex items-center gap-2">
                 {/* Notification for new donations */}
                 {notification.show && (

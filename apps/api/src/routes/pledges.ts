@@ -8,7 +8,8 @@ import {
   getPublicPledges,
   getPledgeStats,
   validatePledgeSubmission,
-  validatePledgeUpdate
+  validatePledgeUpdate,
+  excelPledge
 } from '../controllers/pledgeController';
 import { authenticateToken, requireAdmin } from '../middlewares/authMiddleware';
 
@@ -21,10 +22,13 @@ router.get('/stats', getPledgeStats);
 
 // Admin routes
 router.get('/',
-  // authenticateToken, requireAdmin,
+  authenticateToken, requireAdmin,
   getPledges);
 router.get('/:id', authenticateToken, requireAdmin, getPledgeById);
 router.put('/:id', authenticateToken, requireAdmin, validatePledgeUpdate, updatePledge);
+router.get('/excel',
+  authenticateToken, requireAdmin,
+  excelPledge);
 router.delete('/:id/erase', authenticateToken, requireAdmin, erasePledgePII);
 
 export default router;

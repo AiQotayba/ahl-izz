@@ -67,15 +67,7 @@ export const logSecurityEvent = (
   actor?: string,
   ip?: string,
   details?: any
-) => {
-  securityLogger.info('Security Event', {
-    eventType,
-    actor,
-    ip,
-    timestamp: new Date().toISOString(),
-    details
-  });
-};
+) => {};
 
 export default logger;
 

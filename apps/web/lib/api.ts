@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aleppo.lb-sy.com';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://aleppo.lb-sy.com';
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -60,12 +60,20 @@ api.interceptors.response.use(
 
     // Handle other HTTP errors
     if (error.response?.status >= 500) {
+      console.error('Server Error:', error.response?.status, error.response?.data);
       return Promise.reject(new Error('خطأ في الخادم. يرجى المحاولة لاحقاً.'));
     }
 
     if (error.response?.status >= 400) {
       const errorMessage = error.response?.data?.error || error.response?.data?.message || 'حدث خطأ غير متوقع';
+      console.error('Client Error:', error.response?.status, errorMessage);
       return Promise.reject(new Error(errorMessage));
+    }
+
+    // Handle network errors
+    if (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error')) {
+      console.error('Network Error:', error.message);
+      return Promise.reject(new Error('لا يمكن الاتصال بالخادم. يرجى المحاولة لاحقاً.'));
     }
 
     return Promise.reject(error);
@@ -96,27 +104,112 @@ export const checkAPIHealth = async () => {
 };
 
 export const pledgeAPI = {
+  excelPledge: async () => {
+    try {
+      const response = await api.get('/api/pledges/excel', {
+        responseType: 'blob'
+      });
+      return response;
+    } catch (error: any) {
+      console.error('Excel export error:', error);
+      throw error;
+    }
+  },
+
   submit: async (pledgeData: any) => {
     try {
       const response = await api.post('/api/pledges', pledgeData);
       return response;
     } catch (error: any) {
-      // If API is not available, show a user-friendly message
-      if (error.message?.includes('لا يمكن الاتصال بالخادم')) {
+      console.error('Pledge submission error:', error);
+      
+      // Handle different types of errors
+      if (error.message?.includes('لا يمكن الاتصال بالخادم') || 
+          error.message?.includes('خطأ في الخادم') ||
+          error.code === 'ERR_NETWORK') {
         throw new Error('الخادم غير متاح حالياً. يرجى المحاولة لاحقاً أو التواصل معنا عبر وسائل أخرى.');
       }
+      
+      if (error.response?.status === 500) {
+        throw new Error('خطأ في الخادم. يرجى المحاولة لاحقاً.');
+      }
+      
       throw error;
     }
   },
 
-  getPublic: (limit = 50) =>
-    api.get(`/api/pledges/public?limit=${limit}`),
+  getPublic: async (limit = 50) => {
+    try {
+      return await api.get(`/api/pledges/public?limit=${limit}`);
+    } catch (error: any) {
+      console.error('Public pledges fetch error:', error);
+      
+      // Return mock data if API is not available
+      if (error.message?.includes('لا يمكن الاتصال بالخادم') || 
+          error.message?.includes('خطأ في الخادم') ||
+          error.code === 'ERR_NETWORK') {
+        return {
+          data: {
+            data: [],
+            topDonations: []
+          }
+        };
+      }
+      
+      throw error;
+    }
+  },
 
-  getStats: () =>
-    api.get('/api/pledges/stats'),
+  getStats: async () => {
+    try {
+      return await api.get('/api/pledges/stats');
+    } catch (error: any) {
+      console.error('Stats fetch error:', error);
+      
+      // Return mock data if API is not available
+      if (error.message?.includes('لا يمكن الاتصال بالخادم') || 
+          error.message?.includes('خطأ في الخادم') ||
+          error.code === 'ERR_NETWORK') {
+        return {
+          data: {
+            data: {
+              totalAmount: 0,
+              totalCount: 0
+            }
+          }
+        };
+      }
+      
+      throw error;
+    }
+  },
 
-  getAll: (params?: any) =>
-    api.get('/api/pledges', { params }),
+  getAll: async (params?: any) => {
+    try {
+      return await api.get('/api/pledges', { params });
+    } catch (error: any) {
+      console.error('Get all pledges error:', error);
+      
+      // Return mock data if API is not available
+      if (error.message?.includes('لا يمكن الاتصال بالخادم') || 
+          error.message?.includes('خطأ في الخادم') ||
+          error.code === 'ERR_NETWORK') {
+        return {
+          data: {
+            data: [],
+            pagination: {
+              page: 1,
+              limit: 100,
+              total: 0,
+              totalPages: 1
+            }
+          }
+        };
+      }
+      
+      throw error;
+    }
+  },
 
   getById: (id: string) =>
     api.get(`/api/pledges/${id}`),

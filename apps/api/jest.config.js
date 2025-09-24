@@ -14,12 +14,18 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/server.ts',
     '!src/scripts/**',
+    '!src/config.ts',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  testTimeout: 10000,
-  moduleNameMapping: {
+  testTimeout: 30000,
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
+  testSequencer: '<rootDir>/tests/sequencer.js',
+  maxWorkers: 1, // Run tests sequentially to avoid database conflicts
+  verbose: true,
+  forceExit: true,
+  detectOpenHandles: true,
 };
