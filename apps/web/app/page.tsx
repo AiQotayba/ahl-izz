@@ -294,12 +294,12 @@ export default function HomePage() {
           {/* Logo Section */}
           <div className="flex justify-center items-center lg:items-start md:justify-start mb-4 sm:mb-6 lg:mb-8 flex-col">
             <div className='flex justify-between items-center w-full'>
-              {/* <Logo /> */}
+              <Logo />
               {/* حملة تزويج قتيبة */}
-              <h1 className="text-5xl max-w-[300px] font-bold font-somar text-white leading-snug">
+              {/* <h1 className="text-5xl max-w-[300px] font-bold font-somar text-white leading-snug">
                 حملة تزويج<br />
                 قتيبـــــــــــة
-              </h1>
+              </h1> */}
               <div className="flex items-center gap-2">
                 {/* Notification for new donations */}
                 {notification.show && (
